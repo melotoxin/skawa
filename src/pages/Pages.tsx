@@ -10,7 +10,9 @@ export function PageFrame({children}:{children:ReactNode}){
 
 function MiniFooter(){
   return <footer className="mini-footer">
-    <div className="logo"><span>SKAWA</span><b>FIGHT</b></div>
+    <div className="logo logo--image">
+      <img className="logo__mark logo__mark--light" src="/images/brand/skawa-logo-light.png" alt="SKAWA" width={160} height={41} decoding="async" loading="lazy"/>
+    </div>
     <p>Custom fightwear · Academy programs · Private-label manufacturing</p>
     <Link to="/request-mockup">REQUEST A FREE MOCKUP <ArrowRight/></Link>
     <small>© 2026 SKAWA FIGHT · FRONTEND DEMO</small>

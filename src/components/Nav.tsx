@@ -145,7 +145,10 @@ export default function Nav(){
   return <>
     <a className="skip-link" href="#main-content" onClick={skipToContent}>SKIP TO MAIN CONTENT</a>
     <header className={`nav ${scrolled?'scrolled':''} ${lightPage&&!scrolled?'light-nav':''} ${open?'menu-open':''}`}>
-      <Link className="logo" to="/" aria-label="SKAWA Fight home" aria-current={path==='/'?'page':undefined}><span>SKAWA</span><b>FIGHT</b></Link>
+      <Link className="logo" to="/" aria-label="SKAWA Fight home" aria-current={path==='/'?'page':undefined}>
+        <img className="logo__mark logo__mark--light" src="/images/brand/skawa-logo-light.png" alt="" width={160} height={41} decoding="async"/>
+        <img className="logo__mark logo__mark--dark" src="/images/brand/skawa-logo-dark.png" alt="" width={160} height={41} decoding="async"/>
+      </Link>
       <nav ref={mobileNav} id="primary-navigation" className={open?'open':''} aria-label="Main navigation" tabIndex={open?-1:undefined}>
         <div className="mobile-nav-heading" aria-hidden="true"><span>MENU</span><b>FIND YOUR CORNER.</b></div>
         {navItems.map(item=><Link

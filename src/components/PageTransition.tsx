@@ -12,7 +12,7 @@ const pageMeta:Record<string,{title:string;description:string}>={
   '/request-mockup':{title:'Start a Fightwear Project — SKAWA FIGHT',description:'Share a focused academy, athlete or private-label production brief.'},
   '/selected-fightwear':{title:'Selected Fightwear Concepts — SKAWA FIGHT',description:'Explore clearly labeled fightwear direction concepts and product systems.'},
   '/work':{title:'Selected Fightwear Concepts — SKAWA FIGHT',description:'Explore clearly labeled fightwear direction concepts and product systems.'},
-  '/about':{title:'About SKAWA FIGHT',description:'Learn how SKAWA connects fightwear design, manufacturing and fulfillment.'},
+  '/about':{title:'About SKAWA FIGHT',description:'Three decades of custom BJJ, MMA and boxing gear for brands, academies and athletes.'},
   '/account':{title:'Project Hub — SKAWA FIGHT',description:'Review locally saved designs, project briefs and bag items.'},
 }
 

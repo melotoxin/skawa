@@ -1,6 +1,5 @@
 import {ArrowRight,Factory,Palette,ShieldCheck,Shirt,Users} from 'lucide-react'
 import {Link} from '../routing'
-import {LazyFightShortsScene} from './three'
 import './home-experience.css'
 
 const paths=[
@@ -21,7 +20,42 @@ const callouts=[
 ] as const
 
 export function BuiltToFight(){
-  return <section className="built-fight" aria-labelledby="built-fight-title"><div className="built-fight-copy"><span>TRUE 3D PRODUCT DEMO</span><h2 id="built-fight-title">BUILT<br/><em>TO FIGHT.</em></h2><p>This procedural fight-short model uses real WebGL geometry, lighting and material response. It is an honest demo placeholder structured for replacement by an approved production GLB and UV maps.</p><Link to="/customize">OPEN THE DESIGN LAB <ArrowRight/></Link></div><LazyFightShortsScene className="built-fight-scene"/><div className="built-fight-callouts" aria-label="Product construction capabilities">{callouts.map(([Icon,title,detail],index)=><article key={title}><b>0{index+1}</b><Icon aria-hidden="true"/><div><h3>{title}</h3><p>{detail}</p></div></article>)}</div></section>
+  return (
+    <section className="built-fight" aria-labelledby="built-fight-title">
+      <div className="built-fight-copy">
+        <h2 id="built-fight-title">BUILT<br/><em>TO FIGHT.</em></h2>
+        <p>Production-ready fight-short geometry with studio lighting, motion path trails, and material response — structured for live GLB swap when your approved UV maps land.</p>
+        <Link to="/customize">OPEN THE DESIGN LAB <ArrowRight/></Link>
+      </div>
+
+      <div className="built-fight-scene" role="img" aria-label="Custom fight shorts spinning in cinematic studio motion">
+        <div className="built-fight-scene__stage">
+          <img
+            className="built-fight-scene__img"
+            src="/images/built-to-fight-shorts.png"
+            alt="Black and red custom fight shorts spinning mid-air with light streaks and motion trails"
+            loading="lazy"
+            decoding="async"
+          />
+          <i className="built-fight-scene__glow" aria-hidden="true"/>
+          <i className="built-fight-scene__dust" aria-hidden="true"/>
+        </div>
+      </div>
+
+      <div className="built-fight-callouts" aria-label="Product construction capabilities">
+        {callouts.map(([Icon,title,detail],index)=>(
+          <article key={title}>
+            <b>0{index+1}</b>
+            <Icon aria-hidden="true"/>
+            <div>
+              <h3>{title}</h3>
+              <p>{detail}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
 }
 
 const categories=[
