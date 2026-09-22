@@ -1,0 +1,575 @@
+[
+  {
+    "id": 2593,
+    "slug": "bjj-gi",
+    "name": "BJJ GI",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/bjj-gi/",
+    "sku": "",
+    "short_description": "Create the Gi of your dreams for a one off order, or design for your entire academy or School!",
+    "description": "",
+    "categories": [
+      "Custom",
+      "GIs"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2019/11/2-1.png",
+        "alt": "BJJ GI"
+      }
+    ],
+    "priceLabel": "$10.00",
+    "minN": 10,
+    "maxN": 10,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "K00",
+          "K0",
+          "K1",
+          "K2",
+          "K3",
+          "K4",
+          "A0",
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/bjj-gi-1.png"
+    ]
+  },
+  {
+    "id": 2594,
+    "slug": "fight-short",
+    "name": "Fight Short",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/fight-short/",
+    "sku": "",
+    "short_description": "Custom MMA/ No-Gi BJJ Shorts &nbsp;",
+    "description": "",
+    "categories": [
+      "Custom",
+      "Shorts"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2019/11/1-1.png",
+        "alt": "Fight Short"
+      }
+    ],
+    "priceLabel": "$15.00",
+    "minN": 15,
+    "maxN": 15,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "YXS",
+          "YS",
+          "YM",
+          "YL",
+          "YXL",
+          "XS",
+          "Small",
+          "Medium",
+          "Large",
+          "XLarge",
+          "XXlarge",
+          "XXXLarge",
+          "XXXXLarge"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/fight-short-1.png"
+    ]
+  },
+  {
+    "id": 2592,
+    "slug": "full-sleeves",
+    "name": "Full Sleeves",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/full-sleeves/",
+    "sku": "",
+    "short_description": "Create the Full Sleeves Rash Guard of your dreams for a one off order, or design for your entire academy or School!!",
+    "description": "",
+    "categories": [
+      "Custom",
+      "Rash Guard"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2019/10/Full-sleeve-men_outline-1.png",
+        "alt": "Full Sleeves"
+      }
+    ],
+    "priceLabel": "$10.00 – $20.00",
+    "minN": 10,
+    "maxN": 20,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "YXS",
+          "YS",
+          "YM",
+          "YL",
+          "YXL",
+          "XS",
+          "Small",
+          "Medium",
+          "Large",
+          "XLarge",
+          "XXLarge",
+          "XXXLarge",
+          "XXXXLarge",
+          "XXXXLarge",
+          "WXS",
+          "WSmall",
+          "WMedium",
+          "WLarge",
+          "WXL",
+          "WXXL",
+          "WXXXL"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/full-sleeves-1.png"
+    ]
+  },
+  {
+    "id": 2704,
+    "slug": "ranked-rashguard-black-belt",
+    "name": "Ranked Rashguard – Black Belt",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/ranked-rashguard-black-belt/",
+    "sku": "white rashguard",
+    "short_description": "",
+    "description": "✅ DISCOVER THE ULTIMATE BJJ RANKED RASHGUARD FOR ATHLETES: Designed by jiu-jitsu Black Belt, this breathable men's rash guard is ideal for BJJ Gi and No Gi Jiu-Jitsu, and MMA. ✅ KEEP YOUR BODY COOL DURING INTENSE TRAINING SESSIONS: The advanced, moisture-wicking technology will keep moisture away from your skin while ensuring that your body remains cool and comfortable – even after hours of rollin",
+    "categories": [
+      "Rash Guard"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/black-front.jpeg",
+        "alt": "Ranked Rashguard &#8211; Black Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/Black-3_4-left-copy-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; Black Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/Black-Belt-Back-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; Black Belt"
+      }
+    ],
+    "priceLabel": "$50.00",
+    "minN": 50,
+    "maxN": 50,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "YXS",
+          "YS",
+          "YM",
+          "YL",
+          "YXL",
+          "XS",
+          "Small",
+          "Medium",
+          "Large",
+          "XLarge",
+          "XXLarge",
+          "XXXLarge",
+          "XXXXLarge",
+          "XXXXLarge",
+          "WXS",
+          "WSmall",
+          "WMedium",
+          "WLarge",
+          "WXL",
+          "WXXL",
+          "WXXXL"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/ranked-rashguard-black-belt-1.jpeg",
+      "/images/products/ranked-rashguard-black-belt-2.jpg"
+    ]
+  },
+  {
+    "id": 2685,
+    "slug": "ranked-rashy-blue-belt",
+    "name": "Ranked Rashguard – Blue Belt",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/ranked-rashy-blue-belt/",
+    "sku": "",
+    "short_description": "",
+    "description": "✅ DISCOVER THE ULTIMATE BJJ RANKED RASHGUARD FOR ATHLETES: Designed by jiu-jitsu Black Belt, this breathable men's rash guard is ideal for BJJ Gi and No Gi Jiu-Jitsu, and MMA. ✅ KEEP YOUR BODY COOL DURING INTENSE TRAINING SESSIONS: The advanced, moisture-wicking technology will keep moisture away from your skin while ensuring that your body remains cool and comfortable – even after hours of rollin",
+    "categories": [
+      "Rash Guard"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/blue-front.jpeg",
+        "alt": "Ranked Rashguard &#8211; Blue Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/Blue-3_4-left-copy-1-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; Blue Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/Blue-Belt-back-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; Blue Belt"
+      }
+    ],
+    "priceLabel": "$30.00",
+    "minN": 30,
+    "maxN": 30,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "YXS",
+          "YS",
+          "YM",
+          "YL",
+          "YXL",
+          "XS",
+          "Small",
+          "Medium",
+          "Large",
+          "XLarge",
+          "XXLarge",
+          "XXXLarge",
+          "XXXXLarge",
+          "XXXXLarge",
+          "WXS",
+          "WSmall",
+          "WMedium",
+          "WLarge",
+          "WXL",
+          "WXXL",
+          "WXXXL"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/ranked-rashy-blue-belt-1.jpeg",
+      "/images/products/ranked-rashy-blue-belt-2.jpg"
+    ]
+  },
+  {
+    "id": 2703,
+    "slug": "ranked-rashguard-brown-belt",
+    "name": "Ranked Rashguard – Brown Belt",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/ranked-rashguard-brown-belt/",
+    "sku": "",
+    "short_description": "",
+    "description": "✅ DISCOVER THE ULTIMATE BJJ RANKED RASHGUARD FOR ATHLETES: Designed by jiu-jitsu Black Belt, this breathable men's rash guard is ideal for BJJ Gi and No Gi Jiu-Jitsu, and MMA. ✅ KEEP YOUR BODY COOL DURING INTENSE TRAINING SESSIONS: The advanced, moisture-wicking technology will keep moisture away from your skin while ensuring that your body remains cool and comfortable – even after hours of rollin",
+    "categories": [
+      "Rash Guard"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/brown-front.jpeg",
+        "alt": "Ranked Rashguard &#8211; Brown Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/Brown-3_4-left-copy-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; Brown Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/Brown-Belt-Back-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; Brown Belt"
+      }
+    ],
+    "priceLabel": "$5.00 – $50.00",
+    "minN": 5,
+    "maxN": 50,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "YXS",
+          "YS",
+          "YM",
+          "YL",
+          "YXL",
+          "XS",
+          "Small",
+          "Medium",
+          "Large",
+          "XLarge",
+          "XXLarge",
+          "XXXLarge",
+          "XXXXLarge",
+          "XXXXLarge",
+          "WXS",
+          "WSmall",
+          "WMedium",
+          "WLarge",
+          "WXL",
+          "WXXL",
+          "WXXXL"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/ranked-rashguard-brown-belt-1.jpeg",
+      "/images/products/ranked-rashguard-brown-belt-2.jpg"
+    ]
+  },
+  {
+    "id": 2702,
+    "slug": "ranked-rashguard-purple-belt",
+    "name": "Ranked Rashguard – Purple Belt",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/ranked-rashguard-purple-belt/",
+    "sku": "",
+    "short_description": "",
+    "description": "✅ DISCOVER THE ULTIMATE BJJ RANKED RASHGUARD FOR ATHLETES: Designed by jiu-jitsu Black Belt, this breathable men's rash guard is ideal for BJJ Gi and No Gi Jiu-Jitsu, and MMA. ✅ KEEP YOUR BODY COOL DURING INTENSE TRAINING SESSIONS: The advanced, moisture-wicking technology will keep moisture away from your skin while ensuring that your body remains cool and comfortable – even after hours of rollin",
+    "categories": [
+      "Rash Guard"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/purple-front.jpeg",
+        "alt": "Ranked Rashguard &#8211; Purple Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/Purple-3_4-left-copy-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; Purple Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/Purple-belt-Back-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; Purple Belt"
+      }
+    ],
+    "priceLabel": "$50.00",
+    "minN": 50,
+    "maxN": 50,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "YXS",
+          "YS",
+          "YM",
+          "YL",
+          "YXL",
+          "XS",
+          "Small",
+          "Medium",
+          "Large",
+          "XLarge",
+          "XXLarge",
+          "XXXLarge",
+          "XXXXLarge",
+          "XXXXLarge",
+          "WXS",
+          "WSmall",
+          "WMedium",
+          "WLarge",
+          "WXL",
+          "WXXL",
+          "WXXXL"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/ranked-rashguard-purple-belt-1.jpeg",
+      "/images/products/ranked-rashguard-purple-belt-2.jpg"
+    ]
+  },
+  {
+    "id": 2690,
+    "slug": "ranked-rashguard-white-belt",
+    "name": "Ranked Rashguard – White Belt",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/ranked-rashguard-white-belt/",
+    "sku": "",
+    "short_description": "",
+    "description": "✅ DISCOVER THE ULTIMATE BJJ RANKED RASHGUARD FOR ATHLETES: Designed by jiu-jitsu Black Belt, this breathable men's rash guard is ideal for BJJ Gi and No Gi Jiu-Jitsu, and MMA. ✅ KEEP YOUR BODY COOL DURING INTENSE TRAINING SESSIONS: The advanced, moisture-wicking technology will keep moisture away from your skin while ensuring that your body remains cool and comfortable – even after hours of rollin",
+    "categories": [
+      "Rash Guard"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/white-front.jpeg",
+        "alt": "Ranked Rashguard &#8211; White Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/White-3_4-left-copy-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; White Belt"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/03/White-belt-back2-scaled.jpg",
+        "alt": "Ranked Rashguard &#8211; White Belt"
+      }
+    ],
+    "priceLabel": "$30.00",
+    "minN": 30,
+    "maxN": 30,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "YXS",
+          "YS",
+          "YM",
+          "YL",
+          "YXL",
+          "XS",
+          "Small",
+          "Medium",
+          "Large",
+          "XLarge",
+          "XXLarge",
+          "XXXLarge",
+          "XXXXLarge",
+          "XXXXLarge",
+          "WXS",
+          "WSmall",
+          "WMedium",
+          "WLarge",
+          "WXL",
+          "WXXL",
+          "WXXXL"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/ranked-rashguard-white-belt-1.jpeg",
+      "/images/products/ranked-rashguard-white-belt-2.jpg"
+    ]
+  },
+  {
+    "id": 2666,
+    "slug": "samurai-rashguard",
+    "name": "Samurai Rashguard – Men",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/samurai-rashguard/",
+    "sku": "",
+    "short_description": "Show off your Samurai Spirit with Skawa Fight's High Quality Men-Yoroi",
+    "description": "✅ DISCOVER THE ULTIMATE BJJ RANKED RASHGUARD FOR ATHLETES: Designed by jiu-jitsu Black Belt, this breathable men's rash guard is ideal for BJJ Gi and No Gi Jiu-Jitsu, and MMA. ✅ KEEP YOUR BODY COOL DURING INTENSE TRAINING SESSIONS: The advanced, moisture-wicking technology will keep moisture away from your skin while ensuring that your body remains cool and comfortable – even after hours of rollin",
+    "categories": [
+      "Rash Guard"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/01/Samurai-left-shadow-3_4-1-scaled.jpg",
+        "alt": "Samurai Rashguard &#8211; Men"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/01/Samurai-rt-3_4-1-shadow.jpg",
+        "alt": "Samurai Rashguard &#8211; Men"
+      },
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2020/01/Samurai-left-shadow-3_4-1-scaled.jpg",
+        "alt": "Samurai Rashguard &#8211; Men"
+      }
+    ],
+    "priceLabel": "$10.00",
+    "minN": 10,
+    "maxN": 10,
+    "attributes": [
+      {
+        "name": "size",
+        "options": [
+          "XS",
+          "XX Large"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/samurai-rashguard-1.jpg",
+      "/images/products/samurai-rashguard-2.jpg"
+    ]
+  },
+  {
+    "id": 2590,
+    "slug": "short-sleeves",
+    "name": "Short Sleeves",
+    "type": "variable",
+    "permalink": "https://skawafight.com/product/short-sleeves/",
+    "sku": "Half Sleeves",
+    "short_description": "Create the Short Sleeves Rash Guard of your dreams for a one off order, or design for your entire academy or School!",
+    "description": "",
+    "categories": [
+      "Custom",
+      "Rash Guard"
+    ],
+    "images": [
+      {
+        "src": "https://skawafight.com/wp-content/uploads/2019/10/HAlf-sleeve-men-front_outline.png",
+        "alt": "Short Sleeves"
+      }
+    ],
+    "priceLabel": "$10.00",
+    "minN": 10,
+    "maxN": 10,
+    "attributes": [
+      {
+        "name": "Size",
+        "options": [
+          "YXS",
+          "YS",
+          "YM",
+          "YL",
+          "YXL",
+          "XS",
+          "Small",
+          "Medium",
+          "Large",
+          "XLarge",
+          "XXLarge",
+          "XXXLarge",
+          "XXXXLarge",
+          "XXXXLarge",
+          "WXS",
+          "WSmall",
+          "WMedium",
+          "WLarge",
+          "WXL",
+          "WXXL",
+          "WXXXL"
+        ]
+      }
+    ],
+    "is_purchasable": true,
+    "is_in_stock": true,
+    "localImages": [
+      "/images/products/short-sleeves-1.png"
+    ]
+  }
+]

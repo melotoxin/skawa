@@ -1,0 +1,161 @@
+.skawa-3d {
+  position: relative;
+  width: 100%;
+  min-height: 420px;
+  margin: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 54% 43%, rgb(111 17 22 / 38%), transparent 28%),
+    radial-gradient(circle at 50% 62%, #202124 0, #0a0a0b 52%, #050506 100%);
+  contain: layout paint style;
+}
+
+.skawa-3d::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.22;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 8%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 8%) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: linear-gradient(to bottom, #000, transparent 82%);
+}
+
+.skawa-3d canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: inherit;
+  touch-action: pan-y;
+}
+
+.skawa-3d__badge,
+.skawa-3d__status {
+  position: absolute;
+  z-index: 2;
+  color: #b8b8b5;
+  font: 700 9px/1.2 Inter, Arial, sans-serif;
+  letter-spacing: 0.16em;
+}
+
+.skawa-3d__badge {
+  top: 18px;
+  left: 18px;
+  padding: 9px 11px;
+  border: 1px solid rgb(255 255 255 / 15%);
+  background: rgb(4 4 5 / 60%);
+  backdrop-filter: blur(8px);
+}
+
+.skawa-3d__static {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.skawa-3d__static-product {
+  position: relative;
+  width: min(42%, 230px);
+  aspect-ratio: 0.82;
+  filter: drop-shadow(24px 28px 24px rgb(0 0 0 / 58%));
+}
+
+.skawa-3d__waist,
+.skawa-3d__left-leg,
+.skawa-3d__right-leg {
+  position: absolute;
+  display: block;
+  border: 1px solid rgb(255 255 255 / 9%);
+  background: linear-gradient(135deg, #222428, #090a0c 65%);
+}
+
+.skawa-3d__waist {
+  z-index: 2;
+  top: 10%;
+  left: 5%;
+  width: 90%;
+  height: 19%;
+  border-radius: 10px 10px 4px 4px;
+  box-shadow: inset 0 -4px 0 #bd171f;
+}
+
+.skawa-3d__left-leg,
+.skawa-3d__right-leg {
+  top: 24%;
+  width: 49%;
+  height: 67%;
+  clip-path: polygon(0 0, 100% 0, 84% 100%, 4% 100%);
+}
+
+.skawa-3d__left-leg {
+  left: 5%;
+  border-left: 7px solid #bd171f;
+}
+
+.skawa-3d__right-leg {
+  right: 5%;
+  transform: scaleX(-1);
+  border-left: 7px solid #bd171f;
+}
+
+.skawa-3d__static-mark {
+  position: absolute;
+  z-index: 3;
+  right: 19%;
+  top: 54%;
+  color: #f1f1ee;
+  font: 800 18px/1 'Barlow Condensed', Impact, sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.skawa-3d__status {
+  right: 18px;
+  bottom: 18px;
+}
+
+.skawa-3d__status::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 8px 1px 0;
+  border-radius: 50%;
+  background: #e3262e;
+}
+
+.skawa-3d__caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 680px) {
+  .skawa-3d {
+    min-height: 380px;
+  }
+
+  .skawa-3d__badge,
+  .skawa-3d__status {
+    font-size: 7px;
+  }
+
+  .skawa-3d__static-product {
+    width: min(54%, 220px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skawa-3d canvas {
+    pointer-events: none;
+  }
+}
