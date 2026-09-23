@@ -32,8 +32,9 @@ const DISCIPLINES=[
     num:'01',
     title:'DESIGN',
     copy:'Color systems, artwork zones, logos and production-ready proofs shaped around your identity.',
-    image:'/images/shorts-gold.webp',
-    alt:'Custom fight shorts concept',
+    image:'/images/discipline-design.png',
+    alt:'SKAWA design studio with shorts sketches, fabric swatches and gold logo embroidery',
+    position:'center 42%',
     to:'/customize',
     cta:'OPEN DESIGN LAB',
   },
@@ -41,8 +42,9 @@ const DISCIPLINES=[
     num:'02',
     title:'MANUFACTURE',
     copy:'Sampling through construction, decoration and final inspection — efficient without cutting corners.',
-    image:'/images/private-label.webp',
-    alt:'Garment construction detail',
+    image:'/images/discipline-manufacture.png',
+    alt:'Industrial embroidery machine stitching gold chevrons onto black SKAWA fabric',
+    position:'center 45%',
     to:'/process',
     cta:'SEE THE PROCESS',
   },
@@ -50,8 +52,9 @@ const DISCIPLINES=[
     num:'03',
     title:'FULFILL',
     copy:'Approved packing, clear reorder paths and worldwide shipping readiness for academies and brands.',
-    image:'/images/academy-team.webp',
-    alt:'Academy team in coordinated kit',
+    image:'/images/discipline-fulfill.png',
+    alt:'SKAWA fulfillment center aisle with packed orders ready for dispatch',
+    position:'center 40%',
     to:'/request-mockup',
     cta:'START A BRIEF',
   },
@@ -106,7 +109,7 @@ export function AboutPage(){
   return <PageFrame><main className="about-page" ref={pageRef}>
     <section className="about-hero" aria-labelledby="about-hero-title">
       <div className="about-hero__media" aria-hidden="true">
-        <img src="/images/hero-fighter.webp" alt=""/>
+        <img src="/images/about-hero.jpg" alt=""/>
         <div className="about-hero__shade"/>
       </div>
       <div className="about-hero__copy">
@@ -166,12 +169,10 @@ export function AboutPage(){
       </header>
       <div className="about-discipline-panels about-reveal" data-delay="1">
         {DISCIPLINES.map(item=>(
-          <article key={item.num} tabIndex={0}>
-            <img src={item.image} alt={item.alt} loading="lazy"/>
+          <article key={item.num} tabIndex={0} aria-label={`${item.num} ${item.title}`}>
+            <img src={item.image} alt={item.alt} loading="lazy" style={{objectPosition:item.position}}/>
             <div className="about-discipline-shade"/>
             <div className="about-discipline-copy">
-              <b>{item.num}</b>
-              <h3>{item.title}</h3>
               <p>{item.copy}</p>
               <Link to={item.to}>{item.cta} <ArrowRight/></Link>
             </div>
