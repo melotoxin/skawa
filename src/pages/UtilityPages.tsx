@@ -32,8 +32,8 @@ const DISCIPLINES=[
     num:'01',
     title:'DESIGN',
     copy:'Color systems, artwork zones, logos and production-ready proofs shaped around your identity.',
-    image:'/images/discipline-design.png',
-    alt:'SKAWA design studio with shorts sketches, fabric swatches and gold logo embroidery',
+    image:'/images/ref/path-private-label.jpg',
+    alt:'Brand concept workspace with technical fightwear sketches and labels',
     position:'center 42%',
     to:'/customize',
     cta:'OPEN DESIGN LAB',
@@ -42,8 +42,8 @@ const DISCIPLINES=[
     num:'02',
     title:'MANUFACTURE',
     copy:'Sampling through construction, decoration and final inspection — efficient without cutting corners.',
-    image:'/images/discipline-manufacture.png',
-    alt:'Industrial embroidery machine stitching gold chevrons onto black SKAWA fabric',
+    image:'/images/ref/manufacturing-sewing.jpg',
+    alt:'Hands stitching a SKAWA branded patch on technical fabric',
     position:'center 45%',
     to:'/process',
     cta:'SEE THE PROCESS',
@@ -52,8 +52,8 @@ const DISCIPLINES=[
     num:'03',
     title:'FULFILL',
     copy:'Approved packing, clear reorder paths and worldwide shipping readiness for academies and brands.',
-    image:'/images/discipline-fulfill.png',
-    alt:'SKAWA fulfillment center aisle with packed orders ready for dispatch',
+    image:'/images/ref/path-academy-collection.jpg',
+    alt:'Complete fightwear collection ready for academy and brand fulfillment',
     position:'center 40%',
     to:'/request-mockup',
     cta:'START A BRIEF',
@@ -109,7 +109,7 @@ export function AboutPage(){
   return <PageFrame><main className="about-page" ref={pageRef}>
     <section className="about-hero" aria-labelledby="about-hero-title">
       <div className="about-hero__media" aria-hidden="true">
-        <img src="/images/about-hero.jpg" alt=""/>
+        <img src="/images/ref/hero-fighter-front.jpg" alt=""/>
         <div className="about-hero__shade"/>
       </div>
       <div className="about-hero__copy">
@@ -150,7 +150,7 @@ export function AboutPage(){
           </div>
         </div>
         <div className="about-story__visual about-reveal" data-delay="2">
-          <img src="/images/about-product-lineup.png" alt="SKAWA FIGHT BJJ gis, rash guard and fight shorts product lineup" loading="lazy"/>
+          <img src="/images/ref/path-academy-collection.jpg" alt="SKAWA fightwear collection lineup" loading="lazy"/>
           <div className="about-story__visual-shade"/>
           <div className="about-story__chips" aria-label="Product categories">
             {PRODUCT_CHIPS.map(chip=><span key={chip}>{chip}</span>)}
@@ -196,7 +196,7 @@ export function AboutPage(){
           </div>
         </div>
         <div className="about-feature__media about-reveal" data-delay="1">
-          <img src="/images/shorts-camo.webp" alt="Custom fight shorts with branded pattern" loading="lazy"/>
+          <img src="/images/ref/cat-fight-shorts.jpg" alt="Custom fight shorts with branded pattern" loading="lazy"/>
           <div className="about-feature__badge"><b>YOUR MARK</b><span>DESIGN → SAMPLE → PRODUCE</span></div>
         </div>
       </section>
@@ -215,7 +215,7 @@ export function AboutPage(){
           </div>
         </div>
         <div className="about-feature__media about-reveal" data-delay="1">
-          <img src="/images/private-label.webp" alt="Close-up of technical garment construction" loading="lazy"/>
+          <img src="/images/ref/atmos-belt-tie.jpg" alt="Close-up of martial arts belt and construction detail" loading="lazy"/>
           <div className="about-feature__badge"><b>QC FIRST</b><span>SPEC · BUILD · INSPECT</span></div>
         </div>
       </section>
@@ -246,7 +246,7 @@ export function AboutPage(){
 
     <section className="about-finale" aria-labelledby="partner-title">
       <div className="about-finale__media" aria-hidden="true">
-        <img src="/images/academy-team.webp" alt="" loading="lazy"/>
+        <img src="/images/ref/final-cta-boxer.jpg" alt="" loading="lazy"/>
         <div className="about-finale__shade"/>
       </div>
       <div className="about-finale__content about-reveal">

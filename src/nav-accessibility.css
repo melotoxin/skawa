@@ -33,7 +33,7 @@ body.nav-layer-open{
 
 html.nav-layer-open{scrollbar-gutter:stable}
 
-.nav .nav-actions>:is(a,button):not(.menu){
+.nav .nav-actions>:is(a,button):not(.menu):not(.nav-cta){
   min-width:44px;
   min-height:44px;
   display:grid;

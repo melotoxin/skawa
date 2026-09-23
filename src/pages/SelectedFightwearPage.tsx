@@ -9,7 +9,7 @@ const cases=[
     number:'01',
     title:'Academy identity system',
     category:'DEMO ACADEMY COLLECTION',
-    image:'/images/academy-team.webp',
+    image:'/images/ref/client-team-skawa.jpg',
     summary:'A hypothetical collection showing how one visual identity can extend across athlete, coach and supporter products without implying a completed client engagement.',
     deliverables:['Competition fight shorts','Coordinated teamwear direction','Placement and color system'],
     route:['Brief','Digital mockup','Sample review','Team production'],
@@ -22,7 +22,7 @@ const cases=[
     number:'02',
     title:'Private-label starter line',
     category:'DEMO BRAND CONCEPT',
-    image:'/images/private-label.webp',
+    image:'/images/ref/path-private-label.jpg',
     summary:'A non-client example of the decisions behind a focused first collection: product mix, trims, packaging and a repeatable production specification.',
     deliverables:['Three-product capsule direction','Label and packaging touchpoints','Production-ready approval path'],
     route:['Brand brief','Material selection','Prototype','Quality control'],
@@ -35,7 +35,7 @@ const cases=[
     number:'03',
     title:'Athlete signature short',
     category:'DEMO PRODUCT CONCEPT',
-    image:'/images/shorts-red.webp',
+    image:'/images/ref/cat-fight-shorts.jpg',
     summary:'A clearly marked visual concept demonstrating a custom short route for an individual athlete. The artwork and product are placeholders for later production validation.',
     deliverables:['Color and graphic direction','Name and sponsor zones','Customizer-ready starting point'],
     route:['Select product','Build concept','Approve artwork','Order'],
@@ -68,7 +68,7 @@ export default function SelectedFightwearPage({route='/selected-fightwear'}:{rou
   return <PageFrame>
     <main className="selected-fightwear">
       <header className="selected-fightwear-hero">
-        <img src="/images/academy-team.webp" alt="Demo image representing a fightwear team collection"/>
+        <img src="/images/ref/client-team-skawa.jpg" alt="Demo image representing a fightwear team collection"/>
         <div className="selected-fightwear-shade"/>
         <div className="selected-fightwear-hero-copy">
           <span><FlaskConical/> DEMONSTRATION PORTFOLIO</span>

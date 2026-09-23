@@ -1,27 +1,21 @@
 import {ArrowRight} from 'lucide-react'
 import type {ReactNode} from 'react'
 import Customizer from '../components/Customizer'
+import {HomeFooter} from '../components/HomeRedesign'
 import Nav from '../components/Nav'
 import {Link} from '../routing'
 
 export function PageFrame({children}:{children:ReactNode}){
-  return <><Nav/>{children}<MiniFooter/></>
-}
-
-function MiniFooter(){
-  return <footer className="mini-footer">
-    <div className="logo logo--image">
-      <img className="logo__mark logo__mark--light" src="/images/brand/skawa-logo-light.png" alt="SKAWA" width={160} height={41} decoding="async" loading="lazy"/>
-    </div>
-    <p>Custom fightwear · Academy programs · Private-label manufacturing</p>
-    <Link to="/request-mockup">REQUEST A FREE MOCKUP <ArrowRight/></Link>
-    <small>© 2026 SKAWA FIGHT · FRONTEND DEMO</small>
-  </footer>
+  return <><Nav/>{children}<HomeFooter/></>
 }
 
 export function CustomizePage(){
   return <PageFrame><main className="inner-page customizer-page">
-    <header className="page-hero compact"><div className="eyebrow">DESIGN LAB / 02</div><h1>YOUR COLORS.<br/><em>YOUR MARK.</em></h1><p>Build a concept, save a unique design ID, and prepare a production quote request.</p></header>
+    <header className="page-hero compact sk-container" style={{paddingTop:120,paddingBottom:24}}>
+      <span className="sk-eyebrow">DESIGN LAB</span>
+      <h1 className="sk-display" style={{fontSize:'clamp(2.8rem,6vw,4.8rem)',marginTop:14}}>YOUR COLORS.<br/><em>YOUR MARK.</em></h1>
+      <p style={{maxWidth:520,color:'#a8a8a4',lineHeight:1.7}}>Build a concept on a clean light canvas, save a unique design ID, and prepare a production quote request.</p>
+    </header>
     <Customizer/>
   </main></PageFrame>
 }

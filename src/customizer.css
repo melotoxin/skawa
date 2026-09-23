@@ -1,8 +1,8 @@
 .customizer-app.ref-customizer{
-  --customizer-accent:#e2232a;
-  --customizer-ink:#111;
-  --customizer-muted:#696967;
-  --customizer-line:#d7d7d3;
+  --customizer-accent:var(--sk-red);
+  --customizer-ink:var(--sk-ink);
+  --customizer-muted:var(--sk-muted);
+  --customizer-line:rgba(0,0,0,.12);
   --customizer-panel:#fff;
   position:relative;
   isolation:isolate;

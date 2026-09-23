@@ -3,9 +3,9 @@ import {Link} from '../routing'
 import './home-experience.css'
 
 const paths=[
-  {index:'01',title:'ATHLETES',heading:'CUSTOMIZE INDIVIDUAL GEAR',copy:'Build a personal fightwear concept with your colors, text and artwork.',cta:'START CUSTOMIZING',to:'/customize',image:'/images/path-athletes.jpg',className:'athlete',position:'center 28%'},
-  {index:'02',title:'GYMS & ACADEMIES',heading:'BUILD YOUR ACADEMY COLLECTION',copy:'Coordinate wholesale products, mockups, samples and recurring reorders.',cta:'BUILD YOUR COLLECTION',to:'/academy',image:'/images/path-academy.jpg',className:'academy',position:'center 40%'},
-  {index:'03',title:'FIGHTWEAR BRANDS',heading:'LAUNCH YOUR BRAND',copy:'Move from product brief through private-label production and packing.',cta:'START YOUR BRAND',to:'/private-label',image:'/images/path-brands.jpg',className:'brand',position:'center 38%'},
+  {index:'01',title:'ATHLETES',heading:'CUSTOMIZE INDIVIDUAL GEAR',copy:'Build a personal fightwear concept with your colors, text and artwork.',cta:'START CUSTOMIZING',to:'/customize',image:'/images/ref/hero-fighter-back.jpg',className:'athlete',position:'center 22%'},
+  {index:'02',title:'GYMS & ACADEMIES',heading:'BUILD YOUR ACADEMY COLLECTION',copy:'Coordinate wholesale products, mockups, samples and recurring reorders.',cta:'BUILD YOUR COLLECTION',to:'/academy',image:'/images/ref/path-academy-collection.jpg',className:'academy',position:'center 40%'},
+  {index:'03',title:'FIGHTWEAR BRANDS',heading:'LAUNCH YOUR BRAND',copy:'Move from product brief through private-label production and packing.',cta:'START YOUR BRAND',to:'/private-label',image:'/images/ref/path-private-label.jpg',className:'brand',position:'center 35%'},
 ]
 
 export function CustomerPaths(){
@@ -32,7 +32,7 @@ export function BuiltToFight(){
         <div className="built-fight-scene__stage">
           <img
             className="built-fight-scene__img"
-            src="/images/built-to-fight-shorts.png"
+            src="/images/ref/cat-fight-shorts.jpg"
             alt="Black and red custom fight shorts spinning mid-air with light streaks and motion trails"
             loading="lazy"
             decoding="async"
@@ -59,13 +59,13 @@ export function BuiltToFight(){
 }
 
 const categories=[
-  {name:'JIU JITSU GIS',meta:'ADULT · KIDS · CUSTOM',image:'/images/private-label-gi.png',to:'/shop?category=GIs',tone:'dark'},
-  {name:'RASH GUARDS',meta:'RANKED · CUSTOM · ACADEMY',image:'/images/products/full-sleeves-1.png',to:'/shop?category=Rash%20Guards'},
-  {name:'FIGHT SHORTS',meta:'GRAPPLING · MMA · BOXING',image:'/images/shorts-gold.webp',to:'/shop?category=Fight%20Shorts'},
+  {name:'JIU JITSU GIS',meta:'ADULT · KIDS · CUSTOM',image:'/images/ref/cat-bjj-gi-white.jpg',to:'/shop?category=GIs'},
+  {name:'RASH GUARDS',meta:'RANKED · CUSTOM · ACADEMY',image:'/images/ref/cat-rashguard.jpg',to:'/shop?category=Rash%20Guards'},
+  {name:'FIGHT SHORTS',meta:'GRAPPLING · MMA · BOXING',image:'/images/ref/cat-fight-shorts.jpg',to:'/shop?category=Fight%20Shorts'},
 ]
 
 export function EditorialCategories(){
-  return <section className="editorial-categories" aria-labelledby="categories-title"><header><span>PRODUCT DIRECTIONS</span><h2 id="categories-title">GEAR WITH<br/><em>A PURPOSE.</em></h2><p>The current imagery is a curated demo set. The catalog architecture is ready for verified category photography and production specifications.</p></header><div>{categories.map((category,index)=><article key={category.name}><div className={`category-visual${category.tone==='dark'?' category-visual--dark':''}`}><span>0{index+1}</span><img src={category.image} alt={`${category.name.toLowerCase()} product direction`} loading="lazy"/></div><div className="category-copy"><small>{category.meta}</small><h3>{category.name}</h3><Link to={category.to}>EXPLORE <ArrowRight/></Link></div></article>)}</div></section>
+  return <section className="editorial-categories" aria-labelledby="categories-title"><header><span>PRODUCT DIRECTIONS</span><h2 id="categories-title">GEAR WITH<br/><em>A PURPOSE.</em></h2><p>The current imagery is a curated demo set. The catalog architecture is ready for verified category photography and production specifications.</p></header><div>{categories.map((category,index)=><article key={category.name}><div className="category-visual"><span>0{index+1}</span><img src={category.image} alt={`${category.name.toLowerCase()} product direction`} loading="lazy"/></div><div className="category-copy"><small>{category.meta}</small><h3>{category.name}</h3><Link to={category.to}>EXPLORE <ArrowRight/></Link></div></article>)}</div></section>
 }
 
 export function GlobalPromise(){

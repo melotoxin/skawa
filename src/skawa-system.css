@@ -1,0 +1,101 @@
+/* SKAWA Fight — design tokens (2026 redesign) */
+:root{
+  --sk-red:#e2232a;
+  --sk-red-deep:#b81b21;
+  --sk-ink:#070707;
+  --sk-charcoal:#111111;
+  --sk-graphite:#1a1a1a;
+  --sk-paper:#f4f3ef;
+  --sk-paper-warm:#efeee9;
+  --sk-white:#ffffff;
+  --sk-muted:#8a8a86;
+  --sk-line:rgba(255,255,255,.12);
+  --sk-line-dark:rgba(0,0,0,.1);
+  --sk-display:'Barlow Condensed',Impact,sans-serif;
+  --sk-body:Inter,system-ui,sans-serif;
+  --sk-ease:cubic-bezier(.22,1,.36,1);
+  --sk-fast:200ms;
+  --sk-med:350ms;
+  --sk-slow:700ms;
+  --sk-container:1420px;
+  --sk-gutter:clamp(16px,4vw,56px);
+  --sk-section-y:clamp(72px,10vw,128px);
+  --sk-radius:2px;
+  --sk-nav-h:88px;
+  /* legacy aliases */
+  --red:var(--sk-red);
+  --ink:var(--sk-ink);
+  --paper:var(--sk-paper);
+}
+
+.sk-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-height:48px;
+  padding:0 22px;
+  border:1px solid transparent;
+  border-radius:var(--sk-radius);
+  font:700 11px/1 var(--sk-body);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transition:transform var(--sk-fast) var(--sk-ease),background var(--sk-fast),border-color var(--sk-fast),color var(--sk-fast);
+}
+.sk-btn svg{width:14px;height:14px;transition:transform var(--sk-fast) var(--sk-ease)}
+.sk-btn:hover svg{transform:translateX(4px)}
+.sk-btn--red,.ref-btn.red{background:var(--sk-red);color:#fff;border-color:var(--sk-red)}
+.sk-btn--red:hover,.ref-btn.red:hover{background:var(--sk-red-deep);border-color:var(--sk-red-deep)}
+.sk-btn--outline,.ref-btn.outline{background:transparent;color:#fff;border-color:rgba(255,255,255,.55)}
+.sk-btn--outline:hover,.ref-btn.outline:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.ref-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-height:48px;
+  padding:0 22px;
+  border:1px solid transparent;
+  border-radius:var(--sk-radius);
+  font:700 11px/1 var(--sk-body);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transition:transform var(--sk-fast) var(--sk-ease),background var(--sk-fast),border-color var(--sk-fast),color var(--sk-fast);
+}
+.sk-btn--outline-dark{background:transparent;color:var(--sk-ink);border-color:rgba(0,0,0,.35)}
+.sk-btn--outline-dark:hover{border-color:var(--sk-ink);background:rgba(0,0,0,.04)}
+.sk-btn--ghost{background:transparent;color:#fff;border:0;padding-left:0;padding-right:0;min-height:auto;gap:12px;border-bottom:1px solid rgba(255,255,255,.35);border-radius:0;padding-bottom:6px}
+.sk-btn--ghost:hover{border-bottom-color:#fff}
+.sk-btn--ghost-dark{color:var(--sk-ink);border-bottom-color:rgba(0,0,0,.25)}
+.sk-btn--ghost-dark:hover{border-bottom-color:var(--sk-ink)}
+
+.sk-eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  font:800 10px/1 var(--sk-body);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--sk-red);
+}
+.sk-eyebrow--muted{color:var(--sk-muted)}
+.sk-eyebrow--light{color:rgba(255,255,255,.72)}
+
+.sk-display{
+  font-family:var(--sk-display);
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:.84;
+  text-transform:uppercase;
+  margin:0;
+}
+.sk-display em{font-style:normal;color:var(--sk-red)}
+
+.sk-container{
+  width:min(100% - (var(--sk-gutter) * 2), var(--sk-container));
+  margin-inline:auto;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .sk-btn,.sk-btn svg{transition:none}
+}

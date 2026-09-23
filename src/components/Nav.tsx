@@ -3,18 +3,25 @@ import {useEffect,useRef,useState,type FormEvent,type MouseEvent as ReactMouseEv
 import {getCart,setCart,type CartItem} from '../cart'
 import {Link,go,usePath} from '../routing'
 import '../nav-accessibility.css'
+import '../nav-redesign.css'
 
 const focusableSelector='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
 
 type Layer='menu'|'search'|'cart'
 
 const navItems=[
-  {label:'Shop',to:'/shop',matches:(path:string)=>path==='/shop'||path.startsWith('/product/')||path==='/selected-fightwear'||path==='/work'},
+  {label:'Shop',to:'/shop',matches:(path:string)=>path==='/shop'||path.startsWith('/product/')},
   {label:'Customize',to:'/customize',matches:(path:string)=>path==='/customize'},
-  {label:'Gym & Academy',to:'/academy',matches:(path:string)=>path==='/academy'},
+  {label:'Academies',to:'/academy',matches:(path:string)=>path==='/academy'},
   {label:'Private Label',to:'/private-label',matches:(path:string)=>path==='/private-label'||path==='/sample-kit'},
-  {label:'Our Process',to:'/process',matches:(path:string)=>path==='/process'||path==='/track'},
-  {label:'About',to:'/about',matches:(path:string)=>path==='/about'},
+  {label:'Manufacturing',to:'/process',matches:(path:string)=>path==='/process'||path==='/track'},
+  {label:'Client Work',to:'/selected-fightwear',matches:(path:string)=>path==='/selected-fightwear'||path==='/work'||path.startsWith('/selected-fightwear/')},
+  {label:'More',to:'/about',matches:(path:string)=>path==='/about'||path==='/account'||path==='/request-mockup'},
+]
+
+const mobileExtra=[
+  {label:'About',to:'/about'},
+  {label:'Contact',to:'/request-mockup'},
 ]
 
 export default function Nav(){
@@ -112,7 +119,7 @@ export default function Nav(){
   },[activeLayer])
 
   useEffect(()=>{
-    const wide=matchMedia('(min-width: 981px)')
+    const wide=matchMedia('(min-width: 901px)')
     const closeDesktopMenu=()=>{
       if(!wide.matches)return
       setActiveLayer(layer=>layer==='menu'?null:layer)
@@ -145,7 +152,7 @@ export default function Nav(){
   return <>
     <a className="skip-link" href="#main-content" onClick={skipToContent}>SKIP TO MAIN CONTENT</a>
     <header className={`nav ${scrolled?'scrolled':''} ${lightPage&&!scrolled?'light-nav':''} ${open?'menu-open':''}`}>
-      <Link className="logo" to="/" aria-label="SKAWA Fight home" aria-current={path==='/'?'page':undefined}>
+      <Link className="logo logo--image" to="/" aria-label="SKAWA Fight home" aria-current={path==='/'?'page':undefined}>
         <img className="logo__mark logo__mark--light" src="/images/brand/skawa-logo-light.png" alt="" width={160} height={41} decoding="async"/>
         <img className="logo__mark logo__mark--dark" src="/images/brand/skawa-logo-dark.png" alt="" width={160} height={41} decoding="async"/>
       </Link>
@@ -158,15 +165,26 @@ export default function Nav(){
           className={item.matches(path)?'active':''}
           aria-current={item.matches(path)?'page':undefined}
         >{item.label}</Link>)}
+        {mobileExtra.map(item=>(
+          <Link
+            key={item.to}
+            to={item.to}
+            onClick={closeForNavigation}
+            className={`nav-mobile-extra${path===item.to||(item.to==='/request-mockup'&&path==='/request-mockup')?' active':''}`}
+            aria-current={path===item.to?'page':undefined}
+          >{item.label}</Link>
+        ))}
         <div className="mobile-nav-actions" role="group" aria-label="Account and shopping bag">
-          <Link to="/account" onClick={closeForNavigation} aria-current={path==='/account'?'page':undefined}><UserRound/><span>PROJECT HUB</span></Link>
+          <Link to="/account" onClick={closeForNavigation} aria-current={path==='/account'?'page':undefined}><UserRound/><span>ACCOUNT</span></Link>
           <button type="button" onClick={()=>openLayer('cart',menuTrigger.current)} aria-haspopup="dialog"><ShoppingBag/><span>SHOPPING BAG{count?` · ${count}`:''}</span></button>
+          <Link className="nav-cta nav-cta--block" to="/request-mockup" onClick={closeForNavigation}>GET A FREE MOCKUP</Link>
         </div>
       </nav>
       <div className="nav-actions">
         <button ref={searchTrigger} type="button" className="search-toggle" onClick={()=>openLayer('search',searchTrigger.current)} aria-label="Search" aria-haspopup="dialog" aria-expanded={searchOpen} aria-controls={searchOpen?'site-search-dialog':undefined}><Search/></button>
         <Link className="account-toggle" to="/account" aria-label="Open project hub" aria-current={path==='/account'?'page':undefined}><UserRound/></Link>
         <button ref={cartTrigger} type="button" className="cart-toggle" onClick={()=>openLayer('cart',cartTrigger.current)} aria-label={`Shopping bag with ${count} ${count===1?'item':'items'}`} aria-haspopup="dialog" aria-expanded={cartOpen} aria-controls={cartOpen?'shopping-bag-dialog':undefined}><ShoppingBag/>{count>0&&<i aria-hidden="true">{count}</i>}</button>
+        <Link className="nav-cta" to="/request-mockup">GET A FREE MOCKUP</Link>
         <button ref={menuTrigger} type="button" className="menu" onClick={()=>open?closeLayer():openLayer('menu',menuTrigger.current)} aria-expanded={open} aria-controls="primary-navigation" aria-label={open?'Close menu':'Open menu'}>{open?<X/>:<Menu/>}</button>
       </div>
     </header>

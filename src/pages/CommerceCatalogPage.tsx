@@ -164,12 +164,12 @@ export default function CommerceCatalogPage(){
     <main className="sf-shop">
       <header className="sf-shop__hero">
         <div className="sf-shop__hero-copy">
-          <span>SKAWA FIGHT · PRODUCT CATALOG</span>
-          <h1>GEAR FOR EVERY<br/><em>CORNER.</em></h1>
+          <span className="sk-eyebrow">PRODUCT CATALOG</span>
+          <h1 className="sk-display">SHOP<br/><em>FIGHTWEAR</em></h1>
           <p>Browse the full fightwear catalog. Customize eligible pieces, or request academy and private-label pricing.</p>
         </div>
         <div className="sf-shop__hero-visual" aria-hidden="true">
-          <img src="/images/shop-hero-fighter.png" alt="" loading="eager" decoding="async"/>
+          <img src="/images/ref/hero-fighter-front.jpg" alt="" loading="eager" decoding="async"/>
         </div>
       </header>
 
