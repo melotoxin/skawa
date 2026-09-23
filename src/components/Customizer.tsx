@@ -1,446 +1,117 @@
-import {
-  AlertTriangle,
-  Check,
-  ChevronUp,
-  FileText,
-  Image as ImageIcon,
-  Move,
-  RotateCcw,
-  SlidersHorizontal,
-  Upload,
-  X,
-} from 'lucide-react'
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type CSSProperties,
-  type KeyboardEvent,
-} from 'react'
+import {Component,Suspense,lazy,useEffect,useMemo,useRef,useState,type ChangeEvent,type ReactNode,type CSSProperties} from 'react'
+import {ArrowLeft,ArrowRight,Check,Download,ImagePlus,RotateCcw,RotateCw,Save,Upload,X,ZoomIn,ZoomOut} from 'lucide-react'
 import {products} from '../data'
-import {Link} from '../routing'
-import '../customizer.css'
+import {go} from '../routing'
+import {defaultDesign,downloadFile,fonts,isDesign,paintDesign,palette,patterns,readDesigns,type Design,type DesignSide,type Placement,type SavedDesign} from '../lib/customDesign'
+import '../design-lab.css'
 
-type View = 'FRONT' | 'BACK' | 'SIDE'
-type ToolTab = 'PRODUCT' | 'DESIGN' | 'LOGOS' | 'TEXT' | 'REVIEW'
-type Artwork = {
-  name:string
-  url:string
-  kind:'raster'|'vector'|'document'
-  width?:number
-  height?:number
+const Scene=lazy(()=>import('./three/DesignPreview3D'))
+const tabs=['Product','Design','Logos','Text','Review'] as const
+type Tab=typeof tabs[number]
+const presets=products.filter(p=>p.custom)
+function initialDesign(){
+  const params=new URLSearchParams(location.search),saved=readDesigns().find(d=>d.id===params.get('design'))
+  if(isDesign(saved)&&presets.some(p=>p.id===saved.productId))return saved
+  const requested=params.get('product')||params.get('id')
+  return defaultDesign(presets.find(p=>p.slug===requested||String(p.id)===requested)||presets.find(p=>p.slug==='fight-short')||presets[0])
 }
-
-const colorOptions=[
-  {name:'Midnight black',hex:'#0c0c0c',asset:'/images/products/fight-short-1.png'},
-  {name:'Fight red',hex:'#d51e25',asset:'/images/products/full-sleeves-1.png'},
-  {name:'Deep navy',hex:'#174d79',asset:'/images/products/short-sleeves-1.png'},
-  {name:'Academy green',hex:'#16612c',asset:'/images/products/bjj-gi-1.png'},
-  {name:'Championship gold',hex:'#d1a021',asset:'/images/products/fight-short-1.png'},
-  {name:'Competition white',hex:'#f0f0ed',asset:'/images/products/short-sleeves-1.png'},
-] as const
-
-const productPresets=products.filter(product=>product.custom).map(product=>({
-  id:product.id,
-  label:product.name,
-  color:product.color,
-  image:product.image,
-}))
-
-const tabs:ToolTab[]=['PRODUCT','DESIGN','LOGOS','TEXT','REVIEW']
-const views:View[]=['FRONT','BACK','SIDE']
-const slug=(value:string)=>value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')
-
-const printZones={
-  'right-leg':{label:'Right leg',view:'FRONT' as View,x:68,y:58,minX:55,maxX:82,minY:38,maxY:79,maxScale:110},
-  'left-leg':{label:'Left leg',view:'FRONT' as View,x:32,y:58,minX:18,maxX:45,minY:38,maxY:79,maxScale:110},
-  'waistband':{label:'Front waistband',view:'FRONT' as View,x:50,y:27,minX:32,maxX:68,minY:19,maxY:36,maxScale:82},
-  'rear-panel':{label:'Rear panel',view:'BACK' as View,x:50,y:53,minX:27,maxX:73,minY:35,maxY:70,maxScale:120},
-  'side-panel':{label:'Side panel',view:'SIDE' as View,x:50,y:55,minX:34,maxX:66,minY:32,maxY:76,maxScale:88},
-} as const
-type PrintZone=keyof typeof printZones
-
-function requestedProduct(){
-  const params=new URLSearchParams(window.location.search)
-  const requested=params.get('product')||params.get('id')||''
-  if(!requested)return products.find(product=>product.custom)||products[0]
-  return products.find(product=>String(product.id)===requested||product.slug===requested||slug(product.name)===slug(requested))||products.find(product=>product.custom)||products[0]
+class PreviewBoundary extends Component<{children:ReactNode;fallback:ReactNode},{failed:boolean}>{
+  state={failed:false}
+  static getDerivedStateFromError(){return {failed:true}}
+  render(){return this.state.failed?this.props.fallback:this.props.children}
 }
-
-function presetForProduct(productId:number){
-  return productPresets.find(preset=>preset.id===productId)||productPresets[0]
+function ColorField({label,value,onChange}:{label:string;value:string;onChange:(color:string)=>void}){
+  return <fieldset className="dl-colors"><legend>{label}</legend><div>{palette.map(hex=><button type="button" key={hex} aria-label={`${label} ${hex}`} aria-pressed={hex===value} style={{background:hex}} onClick={()=>onChange(hex)}>{hex===value&&<Check style={{color:hex==='#f0f0ed'?'#111':'white'}}/>}</button>)}<label className="dl-picker" title={`Choose any ${label.toLowerCase()}`}><input type="color" aria-label={`Custom ${label.toLowerCase()}`} value={value} onChange={e=>onChange(e.target.value)}/><span>+</span></label></div><small>{value.toUpperCase()}</small></fieldset>
 }
-
-function SchematicShorts({view,color}:{view:Exclude<View,'FRONT'>;color:string}){
-  if(view==='SIDE')return <svg className="garment-schematic side-schematic" viewBox="0 0 250 360" aria-hidden="true">
-    <defs><linearGradient id="sideShade" x1="0" x2="1"><stop stopColor={color}/><stop offset=".55" stopColor="#353535"/><stop offset="1" stopColor="#080808"/></linearGradient></defs>
-    <path d="M76 48 Q126 34 177 49 L184 89 167 295 118 321 82 296 91 108 72 88Z" fill="url(#sideShade)" stroke="#242424" strokeWidth="4"/>
-    <path d="M78 65 Q127 51 180 66" fill="none" stroke="#c9c9c4" strokeWidth="10" opacity=".78"/>
-    <path d="M153 92 169 286" fill="none" stroke="#e2232a" strokeWidth="3" opacity=".75"/>
-    <text x="122" y="84" textAnchor="middle" fill="#eee" fontSize="15" fontWeight="800">SKAWA</text>
-  </svg>
-  return <svg className="garment-schematic back-schematic" viewBox="0 0 420 360" aria-hidden="true">
-    <defs><linearGradient id="backShade" x1="0" x2="1"><stop stopColor="#090909"/><stop offset=".48" stopColor={color}/><stop offset="1" stopColor="#090909"/></linearGradient></defs>
-    <path d="M76 55 Q210 31 344 55 L355 103 328 317 230 317 210 233 190 317 92 317 65 103Z" fill="url(#backShade)" stroke="#242424" strokeWidth="5"/>
-    <path d="M72 78 Q210 52 348 78" fill="none" stroke="#d9d9d4" strokeWidth="13" opacity=".75"/>
-    <path d="M210 91 210 230" fill="none" stroke="#4b4b4b" strokeWidth="3" strokeDasharray="8 7"/>
-    <text x="210" y="93" textAnchor="middle" fill="#eee" fontSize="20" fontWeight="800">SKAWA</text>
-  </svg>
+function PlacementFields({label,value,onChange,onView}:{label:string;value:Placement;onChange:(p:Placement)=>void;onView:(side:DesignSide)=>void}){
+  return <fieldset className="dl-placement"><legend>{label} placement</legend><label>Print side<select value={value.side} onChange={e=>{const side=e.target.value as DesignSide;onChange({...value,side});onView(side)}}><option value="front">Front</option><option value="back">Back</option></select></label>{(['x','y','size','rotation'] as const).map(key=><label key={key}>{({x:'Horizontal',y:'Vertical',size:'Size',rotation:'Rotation'})[key]}<output>{value[key]}{key==='rotation'?'°':'%'}</output><input type="range" aria-label={`${label} ${({x:'horizontal',y:'vertical',size:'size',rotation:'rotation'})[key]}`} min={key==='rotation'?-180:key==='size'?2:15} max={key==='rotation'?180:key==='size'?35:85} value={value[key]} onChange={e=>onChange({...value,[key]:Number(e.target.value)})}/></label>)}<button type="button" className="dl-secondary" onClick={()=>onChange({...value,x:50,y:50,rotation:0})}>Center {label.toLowerCase()}</button></fieldset>
 }
 
 export default function Customizer(){
-  const initialProduct=useMemo(requestedProduct,[])
-  const initialPreset=presetForProduct(initialProduct.id)
-  const[productId,setProductId]=useState(initialProduct.id)
-  const[color,setColor]=useState<string>(initialPreset.color)
-  const[view,setView]=useState<View>('FRONT')
-  const[tab,setTab]=useState<ToolTab>('PRODUCT')
-  const[material,setMaterial]=useState('Performance micro-stretch')
-  const[print,setPrint]=useState('Sublimation')
-  const[zone,setZone]=useState<PrintZone>('right-leg')
-  const[text,setText]=useState('YOUR NAME')
-  const[artwork,setArtwork]=useState<Artwork|null>(null)
-  const[positionX,setPositionX]=useState<number>(printZones['right-leg'].x)
-  const[positionY,setPositionY]=useState<number>(printZones['right-leg'].y)
-  const[artworkScale,setArtworkScale]=useState<number>(72)
-  const[rotation,setRotation]=useState<number>(0)
-  const[fileIssue,setFileIssue]=useState('')
-  const[saveIssue,setSaveIssue]=useState('')
-  const[saved,setSaved]=useState('')
-  const[drawerOpen,setDrawerOpen]=useState(false)
-  const drawerToggleRef=useRef<HTMLButtonElement>(null)
-  const toolPanelRef=useRef<HTMLDivElement>(null)
-  const restoreDrawerFocusRef=useRef(false)
-
-  const selectedProduct=products.find(product=>product.id===productId)||products[0]
-  const selectedColor=colorOptions.find(option=>option.hex===color)||colorOptions[0]
-  const zoneRule=printZones[zone]
-  const isLowResolution=Boolean(artwork?.kind==='raster'&&artwork.width&&artwork.height&&(artwork.width<1200||artwork.height<1200))
-  const stageAspectRatio=4/3
-  const artworkAspectRatio=artwork?.width&&artwork.height?Math.min(3,Math.max(.35,artwork.width/artwork.height)):1
-  const artworkWidthPercent=18*(artworkScale/100)
-  const artworkHeightPercent=artworkWidthPercent*stageAspectRatio/artworkAspectRatio
-  const rotationRadians=rotation*Math.PI/180
-  const artworkHalfWidth=(Math.abs(artworkWidthPercent*Math.cos(rotationRadians))+Math.abs((artworkHeightPercent/stageAspectRatio)*Math.sin(rotationRadians)))/2
-  const artworkHalfHeight=(Math.abs((artworkWidthPercent*stageAspectRatio)*Math.sin(rotationRadians))+Math.abs(artworkHeightPercent*Math.cos(rotationRadians)))/2
-  const isOutsidePrintArea=Boolean(artwork&&(positionX-artworkHalfWidth<zoneRule.minX||positionX+artworkHalfWidth>zoneRule.maxX||positionY-artworkHalfHeight<zoneRule.minY||positionY+artworkHalfHeight>zoneRule.maxY||artworkScale>zoneRule.maxScale))
-  const wrongView=Boolean(artwork&&view!==zoneRule.view)
-  const placementVisible=view===zoneRule.view
-
-  useEffect(()=>()=>{if(artwork?.url)URL.revokeObjectURL(artwork.url)},[artwork?.url])
-
-  useEffect(()=>{
-    const syncProduct=()=>{
-      const product=requestedProduct()
-      const preset=presetForProduct(product.id)
-      setProductId(product.id)
-      setColor(preset.color)
-    }
-    window.addEventListener('popstate',syncProduct)
-    return()=>window.removeEventListener('popstate',syncProduct)
-  },[])
-
-  useEffect(()=>{
-    if(!drawerOpen){
-      if(restoreDrawerFocusRef.current){
-        restoreDrawerFocusRef.current=false
-        requestAnimationFrame(()=>drawerToggleRef.current?.focus({preventScroll:true}))
-      }
-      return
-    }
-    const panel=toolPanelRef.current
-    const compact=window.matchMedia('(max-width: 760px)').matches
-    const previousOverflow=document.body.style.overflow
-    if(compact)document.body.style.overflow='hidden'
-    const focusable=()=>Array.from(panel?.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])')||[]).filter(element=>element.offsetParent!==null)
-    if(compact)requestAnimationFrame(()=>focusable()[0]?.focus())
-    const handleKey=(event:globalThis.KeyboardEvent)=>{
-      if(event.key==='Escape'){
-        restoreDrawerFocusRef.current=true
-        setDrawerOpen(false)
-        return
-      }
-      if(event.key!=='Tab'||!compact)return
-      const items=focusable()
-      if(!items.length)return
-      const first=items[0]
-      const last=items[items.length-1]
-      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
-      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
-    }
-    window.addEventListener('keydown',handleKey)
-    return()=>{
-      window.removeEventListener('keydown',handleKey)
-      if(compact)document.body.style.overflow=previousOverflow
-    }
-  },[drawerOpen])
-
-  const closeDrawer=()=>{
-    restoreDrawerFocusRef.current=true
-    setDrawerOpen(false)
-  }
-
-  const selectProduct=(id:number,colorValue:string)=>{
-    setProductId(id)
-    setColor(colorValue)
-    setView('FRONT')
-    setSaved('')
-    setSaveIssue('')
-  }
-
-  const selectZone=(nextZone:PrintZone)=>{
-    const next=printZones[nextZone]
-    setZone(nextZone)
-    setPositionX(next.x)
-    setPositionY(next.y)
-    setArtworkScale(Math.min(72,next.maxScale))
-    setRotation(0)
-    setView(next.view)
-    setSaved('')
-    setSaveIssue('')
-  }
-
-  const upload=(event:ChangeEvent<HTMLInputElement>)=>{
-    const selected=event.target.files?.[0]
-    if(!selected)return
-    setFileIssue('')
-    const extension=selected.name.split('.').pop()?.toLowerCase()||''
-    const supported=['png','jpg','jpeg','svg','pdf','ai','eps']
-    if(!supported.includes(extension)){
-      setFileIssue('Unsupported artwork format. Upload PNG, JPG, SVG, PDF, AI or EPS.')
-      event.target.value=''
-      return
-    }
-    if(selected.size>10*1024*1024){
-      setFileIssue('Artwork exceeds the 10MB review limit. Export a smaller file or contact production support.')
-      event.target.value=''
-      return
-    }
-    const url=URL.createObjectURL(selected)
-    if(['png','jpg','jpeg'].includes(extension)){
-      const image=new window.Image()
-      image.onload=()=>setArtwork({name:selected.name,url,kind:'raster',width:image.naturalWidth,height:image.naturalHeight})
-      image.onerror=()=>{URL.revokeObjectURL(url);setFileIssue('This image could not be read. Re-export it and try again.')}
-      image.src=url
-    }else if(extension==='svg'){
-      setArtwork({name:selected.name,url,kind:'vector'})
-    }else{
-      URL.revokeObjectURL(url)
-      setArtwork({name:selected.name,url:'',kind:'document'})
-    }
-    setSaved('')
-    setSaveIssue('')
-    event.target.value=''
-  }
-
-  const clearArtwork=()=>{
-    setArtwork(null)
-    setFileIssue('')
-    setSaved('')
-    setSaveIssue('')
-  }
-
-  const reset=()=>{
-    const preset=presetForProduct(initialProduct.id)
-    setProductId(initialProduct.id)
-    setColor(preset.color)
-    setView('FRONT')
-    setTab('PRODUCT')
-    setMaterial('Performance micro-stretch')
-    setPrint('Sublimation')
-    setZone('right-leg')
-    setText('YOUR NAME')
-    setArtwork(null)
-    setPositionX(printZones['right-leg'].x)
-    setPositionY(printZones['right-leg'].y)
-    setArtworkScale(72)
-    setRotation(0)
-    setSaved('')
-    setFileIssue('')
-    setSaveIssue('')
-    setDrawerOpen(false)
-  }
-
+  const[design,setDesign]=useState<Design>(initialDesign)
+  const[tab,setTab]=useState<Tab>('Product')
+  const[view,setView]=useState('perspective')
+  const[mode,setMode]=useState<'3d'|'2d'>('3d')
+  const[zoom,setZoom]=useState(1)
+  const[spin,setSpin]=useState(false)
+  const[status,setStatus]=useState('')
+  const[error,setError]=useState('')
+  const[savedId,setSavedId]=useState('')
+  const[savedList,setSavedList]=useState(readDesigns)
+  const[busy,setBusy]=useState(false)
+  const[history,setHistory]=useState<Design[]>([])
+  const[future,setFuture]=useState<Design[]>([])
+  const[frames,setFrames]=useState<{front:HTMLCanvasElement;back:HTMLCanvasElement;proofFront:string;proofBack:string}|null>(null)
+  const[rendering,setRendering]=useState(true)
+  const[noWebGL,setNoWebGL]=useState(false)
+  const uploadToken=useRef(0)
+  const product=useMemo(()=>presets.find(p=>p.id===design.productId)||presets[0],[design.productId])
+  const reducedMotion=useMemo(()=>matchMedia('(prefers-reduced-motion: reduce)').matches,[])
+  const update=(patch:Partial<Design>)=>{setHistory(h=>[...h.slice(-19),design]);setFuture([]);setDesign(d=>({...d,...patch}));setSavedId('');setStatus('');setError('')}
+  const setPreview=(side:string)=>{setView(side);setSpin(false)}
+  useEffect(()=>{let active=true;setRendering(true);Promise.all([paintDesign(design,product,'front'),paintDesign(design,product,'back'),paintDesign(design,product,'front',true),paintDesign(design,product,'back',true)]).then(([front,back,pf,pb])=>{if(active){setFrames({front,back,proofFront:pf.toDataURL(),proofBack:pb.toDataURL()});setRendering(false)}}).catch(()=>{if(active){setRendering(false);setError('The preview could not render this artwork. Remove the logo and try another image.')}});return()=>{active=false}},[design,product])
+  useEffect(()=>()=>{uploadToken.current++},[])
+  const restore=(next:Design)=>{uploadToken.current++;setBusy(false);setHistory(h=>[...h.slice(-19),design]);setFuture([]);setDesign(next);setSavedId('');setError('');setPreview('front')}
   const save=()=>{
-    const id=`SKW-${new Date().getFullYear()}-${Math.random().toString(36).slice(2,8).toUpperCase()}`
-    const design={id,productId,product:selectedProduct.name,color:selectedColor.name,colorHex:color,view,material,print,zone,text,artwork:artwork?.name||'',artworkFilePersisted:false,positionX,positionY,artworkScale,rotation,needsArtworkReview:isLowResolution||isOutsidePrintArea,savedAt:new Date().toISOString()}
     try{
-      const stored=JSON.parse(localStorage.getItem('skawa-designs')||'[]')
-      const designs=Array.isArray(stored)?stored:[]
-      localStorage.setItem('skawa-designs',JSON.stringify([...designs,design]))
-      setSaveIssue('')
-      setSaved(id)
-    }catch{
-      setSaved('')
-      setSaveIssue('This browser could not store the design. Keep this page open and request a quote instead.')
-    }
+      const id=savedId||`SKW-${Date.now().toString(36).toUpperCase()}`
+      const record:SavedDesign={...design,id,product:product.name,savedAt:new Date().toISOString()}
+      const next=[...readDesigns().filter(item=>item.id!==id),record]
+      localStorage.setItem('skawa-designs',JSON.stringify(next));setSavedList(next);setSavedId(id);setStatus(`Design ${id} saved in this browser, including your logo.`);setError('');return id
+    }catch{setError('Browser storage is full or unavailable. Download the design file to keep your work.');return null}
   }
-
-  const moveTab=(event:KeyboardEvent<HTMLButtonElement>,current:number)=>{
-    let next=current
-    if(event.key==='ArrowRight')next=(current+1)%tabs.length
-    else if(event.key==='ArrowLeft')next=(current-1+tabs.length)%tabs.length
-    else if(event.key==='Home')next=0
-    else if(event.key==='End')next=tabs.length-1
-    else return
-    event.preventDefault()
-    setTab(tabs[next])
-    const tabButtons=event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')
-    requestAnimationFrame(()=>tabButtons?.[next]?.focus())
+  const uploadLogo=async(event:ChangeEvent<HTMLInputElement>)=>{
+    const file=event.target.files?.[0];event.target.value='';if(!file)return
+    const token=++uploadToken.current;setError('');setBusy(true)
+    try{
+      if(file.size>10*1024*1024)throw new Error('Choose an image smaller than 10 MB.')
+      if(!/\.(png|jpe?g|webp|svg)$/i.test(file.name))throw new Error('Choose PNG, JPG, WebP or SVG artwork. PDF, AI and EPS files cannot be previewed here.')
+      if(/\.svg$/i.test(file.name)){
+        const svg=await file.text(),doc=new DOMParser().parseFromString(svg,'image/svg+xml')
+        if(doc.querySelector('parsererror,script,foreignObject')||Array.from(doc.querySelectorAll('*')).some(el=>Array.from(el.attributes).some(a=>/^on/i.test(a.name)||(/href$/i.test(a.name)&&!a.value.startsWith('#'))||/url\(\s*['"]?(?!#)/i.test(a.value))))throw new Error('Use a self-contained SVG without scripts or external resources, or export it as PNG.')
+      }
+      const url=URL.createObjectURL(file)
+      try{
+        const img=new Image();await new Promise<void>((resolve,reject)=>{img.onload=()=>resolve();img.onerror=()=>reject(new Error('This image is damaged or cannot be decoded. Try a PNG export.'));img.src=url})
+        const scale=Math.min(1,1200/Math.max(img.naturalWidth,img.naturalHeight));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.naturalWidth*scale));c.height=Math.max(1,Math.round(img.naturalHeight*scale));c.getContext('2d')!.drawImage(img,0,0,c.width,c.height)
+        const logo=c.toDataURL('image/png');if(logo.length>2800000)throw new Error('This image is too detailed to save locally. Upload a smaller PNG.')
+        if(token===uploadToken.current){update({logo,logoName:file.name});setPreview(design.logoPlacement.side);setStatus('Logo added. Use the placement controls to size, move and rotate it.')}
+      }finally{URL.revokeObjectURL(url)}
+    }catch(e){if(token===uploadToken.current)setError(e instanceof Error?e.message:'Logo upload failed.')}finally{if(token===uploadToken.current)setBusy(false)}
   }
-
-  const moveView=(event:KeyboardEvent<HTMLButtonElement>,current:number)=>{
-    let next=current
-    if(event.key==='ArrowRight'||event.key==='ArrowDown')next=(current+1)%views.length
-    else if(event.key==='ArrowLeft'||event.key==='ArrowUp')next=(current-1+views.length)%views.length
-    else if(event.key==='Home')next=0
-    else if(event.key==='End')next=views.length-1
-    else return
-    event.preventDefault()
-    setView(views[next])
-    const viewButtons=event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('button')
-    requestAnimationFrame(()=>viewButtons?.[next]?.focus())
+  const importDesign=async(event:ChangeEvent<HTMLInputElement>)=>{
+    const file=event.target.files?.[0];event.target.value='';if(!file)return
+    try{if(file.size>4*1024*1024)throw new Error();const next:unknown=JSON.parse(await file.text());if(!isDesign(next)||!presets.some(p=>p.id===next.productId))throw new Error();restore(next);setStatus('Design imported, including its artwork.')}catch{setError('Choose a valid SKAWA design JSON exported from this Design Lab.')}
   }
+  const downloadPreview=()=>{if(!frames)return;const c=document.createElement('canvas');c.width=2048;c.height=1120;const ctx=c.getContext('2d')!;ctx.fillStyle='#f1f1ef';ctx.fillRect(0,0,c.width,c.height);Promise.all([frames.proofFront,frames.proofBack].map(src=>new Promise<HTMLImageElement>((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=src}))).then(([f,b])=>{ctx.drawImage(f,0,50);ctx.drawImage(b,1024,50);ctx.fillStyle='#161616';ctx.font='bold 26px Arial';ctx.fillText(`${product.name} · FRONT`,55,48);ctx.fillText('BACK',1079,48);ctx.font='20px Arial';ctx.fillText('SKAWA FIGHT · Design concept — final fit, color and print placement subject to production approval.',55,1085);c.toBlob(blob=>{if(blob)downloadFile(blob,'skawa-design-preview.png')},'image/png')}).catch(()=>setError('Preview download failed. Try again after the artwork finishes loading.'))}
+  const undo=()=>{const last=history.at(-1);if(!last)return;setFuture(f=>[design,...f]);setHistory(h=>h.slice(0,-1));setDesign(last);setSavedId('');setStatus('')}
+  const redo=()=>{if(!future[0])return;setHistory(h=>[...h,design]);setDesign(future[0]);setFuture(f=>f.slice(1));setSavedId('');setStatus('')}
+  const proof=frames&&(view==='back'?frames.proofBack:frames.proofFront)
+  const fallback=<div className="dl-flat">{proof?<img src={proof} alt={`${product.name} ${view==='back'?'back':'front'} design preview`}/>:<p role="status">Preparing your design…</p>}</div>
 
-  const artworkStyle={
-    left:`${positionX}%`,
-    top:`${positionY}%`,
-    width:`${artworkWidthPercent}%`,
-    height:`${artworkHeightPercent}%`,
-    transform:`translate(-50%, -50%) rotate(${rotation}deg)`,
-  } as CSSProperties
-  const guideStyle={
-    left:`${zoneRule.minX}%`,
-    top:`${zoneRule.minY}%`,
-    width:`${zoneRule.maxX-zoneRule.minX}%`,
-    height:`${zoneRule.maxY-zoneRule.minY}%`,
-  } as CSSProperties
-
-  return <section id="customizer" className="customizer section">
-    <div className="eyebrow">02 / DESIGN LAB</div>
-    <div className="section-head">
-      <h2>MAKE IT<br/><em>YOURS.</em></h2>
-      <p>Build a visual brief, add your identity and save a unique design reference for quoting.</p>
-    </div>
-
-    <div className={`customizer-app ref-customizer ${drawerOpen?'drawer-active':''}`}>
-      <div className="design-stage">
-        <div className="product-thumbs" role="group" aria-label="Fight shorts styles">
-          {productPresets.map(preset=><button type="button" key={preset.id} className={productId===preset.id?'active':''} aria-pressed={productId===preset.id} aria-label={`Use ${preset.label}`} onClick={()=>selectProduct(preset.id,preset.color)}><img src={preset.image} alt=""/><span>{preset.label}</span></button>)}
+  return <section className="design-lab" aria-label="Fightwear customizer">
+    <header className="dl-heading"><div><span>SKAWA / DESIGN LAB</span><h2>MAKE IT YOURS.</h2><p>Your colors. Your artwork. Every angle.</p></div><div className="dl-history"><button onClick={undo} disabled={!history.length} aria-label="Undo design change"><ArrowLeft/></button><button onClick={redo} disabled={!future.length} aria-label="Redo design change"><ArrowRight/></button><button aria-label="Reset design" onClick={()=>{restore(defaultDesign(product));setStatus('Design reset. Use Undo to recover your previous design.')}}><RotateCcw/> Reset</button></div></header>
+    <div className="dl-workspace">
+      <div className="dl-preview-column"><div className="dl-stage">
+        <div className="dl-preview-toolbar"><span>{mode==='3d'&&!noWebGL?'3D LIVE PREVIEW':'2D DESIGN PROOF'}</span><div><button aria-pressed={mode==='3d'} onClick={()=>{setMode('3d');setPreview('front')}}>3D</button><button aria-pressed={mode==='2d'} onClick={()=>{setMode('2d');setPreview(view==='back'?'back':'front')}}>2D</button></div></div>
+        <div className="dl-canvas" role="group" aria-label={`Interactive ${product.name} preview. Drag to rotate in 3D, or use the view buttons.`}>
+          {mode==='3d'&&!noWebGL&&frames?<PreviewBoundary fallback={<><div className="dl-preview-error">3D unavailable on this device. Your 2D proof and editing controls remain available.</div>{fallback}</>}><Suspense fallback={fallback}><Scene product={product} front={frames.front} back={frames.back} color={design.color} view={view} zoom={zoom} spin={spin&&!reducedMotion} onUnavailable={()=>{setNoWebGL(true);setError('3D is unavailable on this device. Continue designing with the 2D proof.')}}/></Suspense></PreviewBoundary>:fallback}
         </div>
+        <div className="dl-camera"><div role="group" aria-label="Preview angle">{(mode==='2d'?['front','back']:['front','back','left','right']).map(side=><button key={side} aria-pressed={view===side} onClick={()=>setPreview(side)}>{side}</button>)}</div>{mode==='3d'&&<div><button aria-label="Zoom out" disabled={zoom<=.8} onClick={()=>setZoom(z=>Math.max(.8,z-.15))}><ZoomOut/></button><button aria-label="Zoom in" disabled={zoom>=1.6} onClick={()=>setZoom(z=>Math.min(1.6,z+.15))}><ZoomIn/></button><button aria-label="Auto rotate preview" aria-pressed={spin} disabled={reducedMotion} onClick={()=>setSpin(s=>!s)}><RotateCw/></button></div>}</div>
+        <p className="dl-preview-note">{mode==='3d'?'Drag to rotate · Demo 3D geometry':'Front & back design proof'}<span>Production fit and print placement require an approved sample.</span></p>
+        {rendering&&<span className="dl-updating" role="status">Updating preview…</span>}
+      </div><div className="dl-product-caption"><img src={product.image} alt={`${product.name} catalog reference`}/><div><small>YOUR PRODUCT</small><h3>{product.name}</h3><span>{product.category} · Custom order</span></div><b>{product.price}<small>Base price / quote review</small></b></div></div>
 
-        <div className="view-tabs" role="group" aria-label="Garment preview view">
-          {views.map((item,index)=><button type="button" key={item} aria-pressed={view===item} className={view===item?'active':''} onKeyDown={event=>moveView(event,index)} onClick={()=>setView(item)}>{item}</button>)}
-        </div>
-
-        <div id="garment-preview" className={`shorts-stage customizer-stage-view view-${view.toLowerCase()}`} role="group" aria-label={`${view.toLowerCase()} garment ${view==='FRONT'?'reference visual':'placement schematic'}`}>
-          {view==='FRONT'
-            ?<img className="garment-front" src={selectedColor.asset||selectedProduct.image} alt={`${selectedProduct.name}, front reference product visual`}/>
-            :<><SchematicShorts view={view} color={color}/><span className="schematic-badge" aria-hidden="true">SCHEMATIC</span></>}
-          {placementVisible&&<span className="print-zone-guide" aria-hidden="true" style={guideStyle}/>} 
-          {placementVisible&&artwork?.url&&<img className={`artwork-on-garment ${isOutsidePrintArea?'outside':''}`} style={artworkStyle} src={artwork.url} alt={`${artwork.name} placement preview`}/>} 
-          {placementVisible&&artwork?.kind==='document'&&<span className={`document-artwork-marker ${isOutsidePrintArea?'outside':''}`} style={artworkStyle} aria-label={`${artwork.name} production-file placement marker`}><FileText aria-hidden="true"/><small>PRODUCTION FILE</small></span>}
-          {view==='FRONT'&&text&&<span className="customizer-name">{text}</span>}
-          {wrongView&&<div className="stage-placement-note" role="status"><ImageIcon aria-hidden="true"/><span>Artwork is assigned to the {zoneRule.view.toLowerCase()} view.</span><button type="button" onClick={()=>setView(zoneRule.view)}>SHOW {zoneRule.view}</button></div>}
-        </div>
-
-        <div className="preview-caption">
-          <b>{view} {view==='FRONT'?'REFERENCE VISUAL':'PLACEMENT SCHEMATIC'}</b>
-          <span>{view==='FRONT'?'Product photography is a placement reference; selected color is conceptual.':'Illustrated guide only — shape, seams and color are approximate, not product photography.'}</span>
-        </div>
-        <button type="button" className="reset" onClick={reset}><RotateCcw aria-hidden="true"/> Reset design</button>
+      <div className="dl-editor"><h3>CUSTOMIZE YOUR GEAR</h3><div className="dl-tabs" role="tablist" aria-label="Design tools">{tabs.map((name,index)=><button key={name} id={`dl-tab-${name}`} role="tab" aria-selected={tab===name} aria-controls={`dl-panel-${name}`} tabIndex={tab===name?0:-1} onClick={()=>setTab(name)} onKeyDown={e=>{const next=e.key==='ArrowRight'?(index+1)%5:e.key==='ArrowLeft'?(index+4)%5:e.key==='Home'?0:e.key==='End'?4:-1;if(next>=0){e.preventDefault();setTab(tabs[next]);document.getElementById(`dl-tab-${tabs[next]}`)?.focus()}}}>{name}</button>)}</div>
+      <div id={`dl-panel-${tab}`} role="tabpanel" aria-labelledby={`dl-tab-${tab}`} className="dl-panel">
+      {tab==='Product'&&<><label>Choose product<select value={design.productId} onChange={e=>{const p=presets.find(p=>p.id===Number(e.target.value))!;update({productId:p.id,material:p.material||'Performance stretch',size:p.sizes[0]||'M'});setPreview('front')}}>{presets.map(p=><option value={p.id} key={p.id}>{p.name}</option>)}</select></label><div className="dl-field-row"><label>Size<select value={design.size} onChange={e=>update({size:e.target.value})}>{(product.sizes.length?product.sizes:['S','M','L','XL']).map(size=><option key={size}>{size}</option>)}</select></label><label>Quantity<input aria-label="Quantity" type="number" min={1} max={10000} value={design.quantity} onChange={e=>update({quantity:Math.min(10000,Math.max(1,Math.round(Number(e.target.value)||1)))})}/></label></div><ColorField label="Base color" value={design.color} onChange={color=>update({color})}/><ColorField label="Trim color" value={design.trim} onChange={trim=>update({trim})}/><p className="dl-help">Colors apply directly to the garment preview. Choose Design to add a pattern or accent color.</p></>}
+      {tab==='Design'&&<><fieldset className="dl-patterns"><legend>Choose a design</legend><div>{patterns.map(pattern=><button aria-pressed={design.pattern===pattern} key={pattern} onClick={()=>update({pattern})}><i className={`dl-pattern-${pattern}`} style={{'--base':design.color,'--accent':design.accent} as CSSProperties}/>{pattern}</button>)}</div></fieldset><ColorField label="Accent color" value={design.accent} onChange={accent=>update({accent})}/><label>Fabric finish<select value={design.material} onChange={e=>update({material:e.target.value})}>{Array.from(new Set([product.material,'Performance stretch','Cotton weave','Matte technical knit',design.material])).filter(Boolean).map(m=><option key={m}>{m}</option>)}</select></label><label>Decoration method<select value={design.print} onChange={e=>update({print:e.target.value})}>{Array.from(new Set(['Sublimation','Screen print','Embroidery',design.print])).map(p=><option key={p}>{p}</option>)}</select></label><p className="dl-help">The preview shows artwork placement. Fabric and decoration availability are confirmed with your quote.</p></>}
+      {tab==='Logos'&&<><label className="dl-upload"><ImagePlus/><b>{busy?'Reading artwork…':'Upload your logo'}</b><span>PNG, JPG, WebP or SVG · Up to 10 MB</span><input disabled={busy} type="file" accept=".png,.jpg,.jpeg,.webp,.svg" aria-label="Upload logo" onChange={uploadLogo}/></label>{design.logo?<><div className="dl-logo-file"><img src={design.logo} alt="Uploaded logo"/><span>{design.logoName}</span><button aria-label="Remove logo" onClick={()=>update({logo:'',logoName:''})}><X/></button></div><PlacementFields label="Logo" value={design.logoPlacement} onChange={logoPlacement=>update({logoPlacement})} onView={setPreview}/></>:<p className="dl-help">Transparent PNG or SVG works best. After uploading, choose front or back and adjust position, size and rotation.</p>}</>}
+      {tab==='Text'&&<><label>Your text<input aria-label="Personalization text" placeholder="Your name, team or motto" maxLength={32} value={design.text} onChange={e=>update({text:e.target.value})}/></label><small>{design.text.length}/32 characters</small><label>Font<select value={design.font} onChange={e=>update({font:e.target.value})}>{fonts.map(f=><option key={f}>{f}</option>)}</select></label><ColorField label="Text color" value={design.textColor} onChange={textColor=>update({textColor})}/><PlacementFields label="Text" value={design.textPlacement} onChange={textPlacement=>update({textPlacement})} onView={setPreview}/><button className="dl-secondary" disabled={!design.text} onClick={()=>update({text:''})}>Remove text</button></>}
+      {tab==='Review'&&<><h4>YOUR DESIGN, READY TO REVIEW.</h4><dl className="dl-specs">{Object.entries({Product:product.name,Size:design.size,Quantity:design.quantity,Colors:`${design.color} / ${design.accent} / ${design.trim}`,Pattern:design.pattern,Fabric:design.material,Method:design.print,Text:design.text||'None',Logo:design.logoName||'None'}).map(([k,v])=><div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl><button className="dl-secondary" onClick={downloadPreview} disabled={!frames||rendering}><Download/> Download front & back PNG</button><button className="dl-secondary" onClick={()=>downloadFile(new Blob([JSON.stringify(design,null,2)],{type:'application/json'}),'skawa-design.json')}><Download/> Export editable design</button><label className="dl-import"><Upload/> Import saved design<input type="file" accept=".json" aria-label="Import design" onChange={importDesign}/></label><label>Load a saved design<select value="" onChange={e=>{const item=savedList.find(d=>d.id===e.target.value);if(isDesign(item)&&presets.some(p=>p.id===item.productId)){restore(item);setSavedId(item.id);setStatus('Saved design loaded.')}else setError('This older design is missing editable artwork. Start a new design or import a current export.')}}><option value="">Select a design…</option>{savedList.map(d=><option key={d.id} value={d.id}>{d.id} · {d.product||'Custom gear'}</option>)}</select></label><p className="dl-help">Save keeps the complete design and logo in this browser. Export a file to back it up or open it on another device.</p></>}
       </div>
-
-      {drawerOpen&&<button className="mobile-drawer-backdrop" type="button" aria-label="Close design tools" onClick={closeDrawer}/>} 
-      <button ref={drawerToggleRef} type="button" className="mobile-tool-toggle" aria-expanded={drawerOpen} aria-controls="customizer-tools" onClick={()=>drawerOpen?closeDrawer():setDrawerOpen(true)}><SlidersHorizontal aria-hidden="true"/> DESIGN TOOLS <ChevronUp aria-hidden="true"/></button>
-
-      <div ref={toolPanelRef} id="customizer-tools" className={`tool-panel ${drawerOpen?'drawer-open':''}`} role={drawerOpen?'dialog':'region'} aria-modal={drawerOpen?true:undefined} aria-label="Design tools">
-        <div className="tool-panel-heading">
-          <h3>CUSTOMIZE YOUR FIGHT SHORTS</h3>
-          <button type="button" className="drawer-close" aria-label="Close design tools" onClick={closeDrawer}><X aria-hidden="true"/></button>
-        </div>
-
-        <div className="tabs" role="tablist" aria-label="Customization tools">
-          {tabs.map((item,index)=><button id={`customizer-tab-${item.toLowerCase()}`} aria-controls={`customizer-panel-${item.toLowerCase()}`} type="button" role="tab" aria-selected={tab===item} tabIndex={tab===item?0:-1} className={tab===item?'active':''} onKeyDown={event=>moveTab(event,index)} onClick={()=>setTab(item)} key={item}>{item}</button>)}
-        </div>
-
-        <div id="customizer-panel-product" role="tabpanel" aria-labelledby="customizer-tab-product" tabIndex={0} hidden={tab!=='PRODUCT'} className="customizer-tool-content">
-          <p className="field-label">CHOOSE COLOR</p>
-          <div className="swatches named-swatches" role="group" aria-label="Available garment colors">
-            {colorOptions.map(option=><button type="button" key={option.hex} aria-label={`Select ${option.name}`} aria-pressed={color===option.hex} title={option.name} onClick={()=>{setColor(option.hex);setSaved('');setSaveIssue('')}} className={color===option.hex?'selected':''} style={{background:option.hex}}><span>{option.name}</span></button>)}
-          </div>
-          <p className="selection-readout"><span aria-hidden="true" style={{background:color}}/> {selectedColor.name}</p>
-          <label htmlFor="material">MATERIAL</label>
-          <select id="material" value={material} onChange={event=>{setMaterial(event.target.value);setSaved('');setSaveIssue('')}}><option>Performance micro-stretch</option><option>Lightweight fight satin</option><option>Recycled technical weave</option></select>
-          <div className="tool-note"><b>SELECTED PRODUCT</b><p>{selectedProduct.name}. Visuals are placement references; production colors are confirmed during proofing.</p></div>
-        </div>
-
-        <div id="customizer-panel-design" role="tabpanel" aria-labelledby="customizer-tab-design" tabIndex={0} hidden={tab!=='DESIGN'} className="customizer-tool-content">
-          <label htmlFor="print-zone">PRINT ZONE</label>
-          <select id="print-zone" value={zone} onChange={event=>selectZone(event.target.value as PrintZone)}>{Object.entries(printZones).map(([value,item])=><option value={value} key={value}>{item.label} · {item.view.toLowerCase()}</option>)}</select>
-          <label htmlFor="print-method">DECORATION METHOD</label>
-          <select id="print-method" value={print} onChange={event=>{setPrint(event.target.value);setSaved('');setSaveIssue('')}}><option>Sublimation</option><option>Embroidery</option><option>Screen print</option><option>Woven patch</option></select>
-          <div className="tool-note"><b>PRODUCTION NOTE</b><p>{print} compatibility is confirmed after the artwork, fabric, detail size and order quantity are reviewed.</p></div>
-        </div>
-
-        <div id="customizer-panel-logos" role="tabpanel" aria-labelledby="customizer-tab-logos" tabIndex={0} hidden={tab!=='LOGOS'} className="customizer-tool-content">
-          {!artwork&&<label className="upload"><Upload aria-hidden="true"/> UPLOAD ARTWORK<input aria-label="Upload a logo or production artwork" aria-describedby="artwork-upload-help" onChange={upload} type="file" accept=".png,.jpg,.jpeg,.pdf,.svg,.ai,.eps"/></label>}
-          <small id="artwork-upload-help">PNG, JPG, SVG, PDF, AI or EPS · 10MB maximum · 1200px minimum recommended for raster files. The preview stays in this browser session; saving records its name and placement, not the source file.</small>
-          {fileIssue&&<div className="validation-message error" role="alert"><X aria-hidden="true"/><div><b>FILE NOT ACCEPTED</b><span>{fileIssue}</span></div></div>}
-          {artwork&&<div className="artwork-file-card">
-            <div className="artwork-thumbnail">{artwork.url?<img src={artwork.url} alt=""/>:<FileText aria-hidden="true"/>}</div>
-            <div><b>{artwork.name}</b><span>{artwork.kind==='raster'?`${artwork.width} × ${artwork.height}px`:artwork.kind==='vector'?'Vector artwork':'Production artwork file'}</span></div>
-            <button type="button" aria-label="Remove uploaded artwork" onClick={clearArtwork}><X aria-hidden="true"/></button>
-          </div>}
-          {artwork&&<fieldset className="placement-controls">
-            <legend className="placement-title"><Move aria-hidden="true"/><b>ARTWORK PLACEMENT</b><span>{printZones[zone].label}</span></legend>
-            <label htmlFor="artwork-x">Horizontal <output htmlFor="artwork-x">{positionX}%</output></label>
-            <input id="artwork-x" type="range" min="5" max="95" value={positionX} aria-valuetext={`${positionX} percent`} onChange={event=>{setPositionX(Number(event.target.value));setSaved('');setSaveIssue('')}}/>
-            <label htmlFor="artwork-y">Vertical <output htmlFor="artwork-y">{positionY}%</output></label>
-            <input id="artwork-y" type="range" min="10" max="90" value={positionY} aria-valuetext={`${positionY} percent`} onChange={event=>{setPositionY(Number(event.target.value));setSaved('');setSaveIssue('')}}/>
-            <label htmlFor="artwork-scale">Scale <output htmlFor="artwork-scale">{artworkScale}%</output></label>
-            <input id="artwork-scale" type="range" min="30" max="140" value={artworkScale} aria-valuetext={`${artworkScale} percent`} onChange={event=>{setArtworkScale(Number(event.target.value));setSaved('');setSaveIssue('')}}/>
-            <label htmlFor="artwork-rotation">Rotation <output htmlFor="artwork-rotation">{rotation}°</output></label>
-            <input id="artwork-rotation" type="range" min="-180" max="180" value={rotation} aria-valuetext={`${rotation} degrees`} onChange={event=>{setRotation(Number(event.target.value));setSaved('');setSaveIssue('')}}/>
-            <button type="button" className="center-artwork" onClick={()=>selectZone(zone)}>RESET TO SAFE AREA</button>
-          </fieldset>}
-        </div>
-
-        <div id="customizer-panel-text" role="tabpanel" aria-labelledby="customizer-tab-text" tabIndex={0} hidden={tab!=='TEXT'} className="customizer-tool-content">
-          <label htmlFor="design-text">FRONT PERSONALIZATION</label>
-          <input id="design-text" className="tool-input" maxLength={18} value={text} aria-describedby="design-text-help" onChange={event=>{setText(event.target.value.toUpperCase());setSaved('');setSaveIssue('')}}/>
-          <small id="design-text-help">{text.length}/18 characters · Previewed on the front waistband. Final typography, spacing and placement are confirmed in the production proof.</small>
-        </div>
-
-        <div id="customizer-panel-review" role="tabpanel" aria-labelledby="customizer-tab-review" tabIndex={0} hidden={tab!=='REVIEW'} className="customizer-tool-content">
-          <div className="review-list" role="list">
-            <span role="listitem"><Check aria-hidden="true"/><b>{selectedProduct.name}</b></span>
-            <span role="listitem"><Check aria-hidden="true"/>{selectedColor.name} · {material}</span>
-            <span role="listitem"><Check aria-hidden="true"/>{printZones[zone].label} · {print}</span>
-            <span role="listitem" className={artwork?'':'muted'}>{artwork?<Check aria-hidden="true"/>:<ImageIcon aria-hidden="true"/>}{artwork?artwork.name:'Artwork is optional'}</span>
-            <span role="listitem"><Check aria-hidden="true"/>{text||'No personalization text'}</span>
-            {(isLowResolution||isOutsidePrintArea)&&<span role="listitem" className="needs-review"><AlertTriangle aria-hidden="true"/>Artwork needs production review</span>}
-          </div>
-        </div>
-
-        {(isLowResolution||isOutsidePrintArea||wrongView)&&<div className="customizer-warnings" aria-live="polite" aria-atomic="false">
-          {isLowResolution&&<div className="validation-message warning"><AlertTriangle aria-hidden="true"/><div><b>RASTER ARTWORK MAY PRINT SOFT</b><span>Use a file at least 1200px wide and tall, or upload vector artwork for the cleanest result.</span></div></div>}
-          {isOutsidePrintArea&&<div id="artwork-boundary-warning" className="validation-message warning"><AlertTriangle aria-hidden="true"/><div><b>ARTWORK EXTENDS OUTSIDE THE PRINT AREA</b><span>Move, rotate or scale the artwork until it sits inside the dotted {zoneRule.label.toLowerCase()} guide.</span></div></div>}
-          {wrongView&&<div className="validation-message info"><ImageIcon aria-hidden="true"/><div><b>VIEW DOES NOT MATCH SELECTED ZONE</b><span>Switch to {zoneRule.view.toLowerCase()} to review the {zoneRule.label.toLowerCase()} placement accurately.</span></div></div>}
-        </div>}
+      <div className="dl-actions">{status&&<p className="dl-success" role="status"><Check/>{status}</p>}{error&&<p className="dl-error" role="alert">{error}</p>}<button className="dl-primary" disabled={busy} onClick={save}><Save/> {savedId?'DESIGN SAVED':'SAVE DESIGN'}</button><button className="dl-secondary" disabled={busy} onClick={()=>{const id=save();if(id)go(`/request-mockup?intent=custom-design&product=${product.slug}&design=${id}`)}}>REQUEST A QUOTE <ArrowRight/></button><p>Custom order pricing is confirmed after design review.</p></div>
       </div>
-
-      <aside className="summary" aria-label="Design summary">
-        <span>{selectedProduct.price==='Quote only'?'PRICING':'ESTIMATED PRICE'}</span><h3>{selectedProduct.price}</h3>
-        <dl><div><dt>Product</dt><dd>{selectedProduct.name}</dd></div><div><dt>Color</dt><dd>{selectedColor.name}</dd></div><div><dt>Print zone</dt><dd>{zoneRule.label}</dd></div><div><dt>Method</dt><dd>{print}</dd></div><div><dt>Artwork</dt><dd>{artwork?'Added':'Not added'}</dd></div></dl>
-        {saved&&<div className="design-saved" role="status"><Check aria-hidden="true"/><div><small>DESIGN SAVED</small><b>{saved}</b></div></div>}
-        {saveIssue&&<div className="save-issue" role="alert"><AlertTriangle aria-hidden="true"/><span>{saveIssue}</span></div>}
-        <button type="button" className="btn primary" onClick={save}>SAVE DESIGN</button>
-        <Link className="btn ghost" to={`/request-mockup?intent=custom-design&product=${slug(selectedProduct.name)}`}>REQUEST QUOTE</Link>
-        <small>Estimate shown for interface demonstration. Placement is a visual brief, not a production proof. Final artwork, color and pricing require review.</small>
-      </aside>
     </div>
   </section>
 }

@@ -147,7 +147,7 @@ export function AboutPage(){
           </div>
         </div>
         <div className="about-story__visual about-reveal" data-delay="2">
-          <img src="/images/shop-hero-fighter.png" alt="Athlete in SKAWA performance fightwear" loading="lazy"/>
+          <img src="/images/about-product-lineup.png" alt="SKAWA FIGHT BJJ gis, rash guard and fight shorts product lineup" loading="lazy"/>
           <div className="about-story__visual-shade"/>
           <div className="about-story__chips" aria-label="Product categories">
             {PRODUCT_CHIPS.map(chip=><span key={chip}>{chip}</span>)}
