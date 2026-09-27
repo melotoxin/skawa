@@ -104,7 +104,13 @@ const shippedModelByKind:Partial<Record<GearKind,string>>={
 
 /** Blender-authored SKAWA assets supplied for these exact catalog silhouettes. */
 const blenderModelBySlug:Record<string,string>={
-  'fight-short':'/models/fight-short.glb?v=blender-web2',
+  'fight-short':'/models/fight-short.glb?v=blender-web3',
+  'elite-fight-shorts':'/models/fight-short.glb?v=blender-web3',
+  'academy-gold-shorts':'/models/fight-short.glb?v=blender-web3',
+  'shadow-series':'/models/fight-short.glb?v=blender-web3',
+  'crimson-training-shorts':'/models/fight-short.glb?v=blender-web3',
+  'reign-fight-shorts':'/models/fight-short.glb?v=blender-web3',
+  'stealth-pro':'/models/fight-short.glb?v=blender-web3',
   'full-sleeves':'/models/rash-guard.glb?v=blender',
   'sports-bags':'/models/gear-bag.glb?v=blender',
   'bjj-gi':'/models/bjj-gi.glb?v=blender-gi',
