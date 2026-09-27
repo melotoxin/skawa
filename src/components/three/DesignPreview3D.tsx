@@ -129,8 +129,24 @@ function ArtDrag({art,onArtGrab,onArtMove,onArtEnd}:{art:ArtTarget;onArtGrab:(ke
   return null
 }
 
+/** Reports a real WebGL context loss. The listener is removed before the canvas unmounts, because R3F
+ * deliberately releases the context on unmount (switching to 2D), which is not a failure. */
+function ContextLossWatch({onLost}:{onLost:()=>void}){
+  const gl=useThree(state=>state.gl)
+  const lostRef=useRef(onLost)
+  lostRef.current=onLost
+  useEffect(()=>{
+    const el=gl.domElement
+    const lost=()=>lostRef.current()
+    el.addEventListener('webglcontextlost',lost,{once:true})
+    return()=>el.removeEventListener('webglcontextlost',lost)
+  },[gl])
+  return null
+}
+
 export default function DesignPreview3D(props:Props){
-  return <Canvas camera={{position:[0,.12,5.4],fov:38}} dpr={[1,1.5]} frameloop={props.spin?'always':'demand'} gl={{antialias:true,powerPreference:'low-power'}} onCreated={({gl})=>{gl.domElement.addEventListener('webglcontextlost',props.onUnavailable,{once:true})}}>
+  return <Canvas camera={{position:[0,.12,5.4],fov:38}} dpr={[1,1.5]} frameloop={props.spin?'always':'demand'} gl={{antialias:true,powerPreference:'low-power'}}>
+    <ContextLossWatch onLost={props.onUnavailable}/>
     <ambientLight intensity={1.6}/><directionalLight position={[3,4,5]} intensity={2.2}/><directionalLight position={[-3,1,-4]} intensity={1.7}/>
     <Suspense fallback={null}>
       {apparelModelUrl(props.product)
