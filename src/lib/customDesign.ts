@@ -25,9 +25,10 @@ export const palette = ['#151515','#df202b','#174d79','#16612c','#d1a021','#f0f0
 /** Adult mid size first (M / Medium, then A2 for gis) so a new design never starts on a kids size. */
 export const defaultSize = (sizes:string[]) => sizes.find(size=>/^(m|medium)$/i.test(size))||sizes.find(size=>/^a2$/i.test(size))||sizes[0]
 export function defaultDesign(product:Product):Design {
-  return {version:2,productId:product.id,color:'#151515',accent:'#df202b',trim:'#080808',pattern:'slash',
+  const backpack=product.slug==='gear-bags'
+  return {version:2,productId:product.id,color:'#151515',accent:'#df202b',trim:'#080808',pattern:backpack?'solid':'slash',
     material:product.material||'Performance stretch',print:'Sublimation',size:defaultSize(product.sizes)||'M',quantity:1,
-    text:'YOUR NAME',textColor:'#ffffff',font:'Impact',textPlacement:{side:'front',x:50,y:27,size:8,rotation:0},
+    text:backpack?'':'YOUR NAME',textColor:'#ffffff',font:'Impact',textPlacement:{side:'front',x:50,y:27,size:8,rotation:0},
     logo:'',logoName:'',logoPlacement:{side:'front',x:65,y:60,size:18,rotation:0},mirrorText:false,mirrorLogo:false}
 }
 
@@ -88,7 +89,7 @@ export async function paintDesign(design:Design,product:Product,side:DesignSide,
   if(design.pattern==='fade'){const g=ctx.createLinearGradient(0,250,0,900);g.addColorStop(0,design.color);g.addColorStop(1,design.accent);ctx.fillStyle=g;ctx.fillRect(0,0,1024,1024)}
   const upper=['rashguard','gi','uniform'].includes(product.modelKind||'')
   ctx.fillStyle=design.trim
-  if(upper){ctx.fillRect(0,865,1024,45);if(product.modelKind==='gi'||product.modelKind==='uniform'){ctx.save();ctx.translate(512,370);ctx.rotate(-.22);ctx.fillRect(-28,-250,56,700);ctx.restore()}}
+  if(upper){ctx.fillRect(0,865,1024,45);if((product.modelKind==='gi'||product.modelKind==='uniform')&&proof){ctx.save();ctx.translate(512,370);ctx.rotate(-.22);ctx.fillRect(-28,-250,56,700);ctx.restore()}}
   else {ctx.fillRect(0,150,1024,90);ctx.fillRect(0,870,1024,30)}
   // Fine weave, generated locally; no texture request or hidden remote dependency.
   ctx.strokeStyle='rgba(255,255,255,.045)';ctx.lineWidth=1
@@ -96,5 +97,42 @@ export async function paintDesign(design:Design,product:Product,side:DesignSide,
   if(design.logo&&(design.logoPlacement.side===side||(design.mirrorLogo??design.mirrorArt)===true)){const img=new Image();await new Promise<void>((resolve,reject)=>{img.onload=()=>resolve();img.onerror=()=>reject(new Error('Logo could not be rendered'));img.src=design.logo});const p=design.logoPlacement,w=p.size/100*1024,h=w*img.height/img.width;ctx.save();ctx.translate(p.x/100*1024,p.y/100*1024);ctx.rotate(p.rotation*Math.PI/180);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore()}
   if(design.text&&(design.textPlacement.side===side||(design.mirrorText??design.mirrorArt)===true)){const p=design.textPlacement;ctx.save();ctx.translate(p.x/100*1024,p.y/100*1024);ctx.rotate(p.rotation*Math.PI/180);ctx.fillStyle=design.textColor;ctx.font=`bold ${p.size*8}px ${design.font}`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(design.text,0,0,680);ctx.restore()}
   if(proof)ctx.restore()
+  return canvas
+}
+
+/** Transparent decoration for the backpack's real 3D surface. Its fabric texture stays visible. */
+export async function paintBagOverlay(design:Design,side:DesignSide){
+  const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=1024
+  const ctx=canvas.getContext('2d')!
+  ctx.fillStyle=design.accent
+  if(design.pattern==='slash'){
+    ctx.globalAlpha=.5
+    for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,360+i*95);ctx.lineTo(485,160+i*95);ctx.lineTo(185,490+i*95);ctx.closePath();ctx.fill()}
+  }
+  if(design.pattern==='stripe'){
+    ctx.globalAlpha=.5;ctx.fillRect(220,0,70,1024);ctx.fillRect(744,0,70,1024)
+  }
+  if(design.pattern==='camo'){
+    ctx.globalAlpha=.45
+    for(let i=0;i<65;i++){const x=(i*137)%1024,y=(i*227)%1024;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+100,y+17);ctx.lineTo(x+140,y+65);ctx.lineTo(x+42,y+100);ctx.lineTo(x-26,y+37);ctx.fill()}
+  }
+  if(design.pattern==='fade'){
+    const gradient=ctx.createLinearGradient(0,250,0,900)
+    gradient.addColorStop(0,`${design.accent}00`);gradient.addColorStop(1,`${design.accent}99`)
+    ctx.fillStyle=gradient;ctx.fillRect(0,0,1024,1024)
+  }
+  ctx.globalAlpha=1
+  if(design.logo&&(design.logoPlacement.side===side||(design.mirrorLogo??design.mirrorArt)===true)){
+    const img=new Image()
+    await new Promise<void>((resolve,reject)=>{img.onload=()=>resolve();img.onerror=()=>reject(new Error('Logo could not be rendered'));img.src=design.logo})
+    const p=design.logoPlacement,w=p.size/100*1024,h=w*img.height/img.width
+    ctx.save();ctx.translate(p.x/100*1024,p.y/100*1024);ctx.rotate(p.rotation*Math.PI/180);ctx.drawImage(img,-w/2,-h/2,w,h);ctx.restore()
+  }
+  if(design.text&&(design.textPlacement.side===side||(design.mirrorText??design.mirrorArt)===true)){
+    const p=design.textPlacement
+    ctx.save();ctx.translate(p.x/100*1024,p.y/100*1024);ctx.rotate(p.rotation*Math.PI/180)
+    ctx.fillStyle=design.textColor;ctx.font=`bold ${p.size*8}px ${design.font}`
+    ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(design.text,0,0,680);ctx.restore()
+  }
   return canvas
 }

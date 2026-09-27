@@ -1,7 +1,8 @@
 import {useEffect,useLayoutEffect,useMemo,useRef} from 'react'
 import {useFrame,useThree} from '@react-three/fiber'
 import {useGLTF} from '@react-three/drei'
-import {Box3,BufferAttribute,BufferGeometry,CanvasTexture,Mesh,MeshStandardMaterial,SRGBColorSpace,Vector3,type Group} from 'three'
+import {Box3,BufferAttribute,BufferGeometry,CanvasTexture,DoubleSide,Euler,Mesh,MeshBasicMaterial,MeshStandardMaterial,SRGBColorSpace,Vector3,type Group,type Texture} from 'three'
+import {DecalGeometry} from 'three/addons/geometries/DecalGeometry.js'
 
 
 type Props={
@@ -19,6 +20,38 @@ type Props={
   trim?:string
   front?:HTMLCanvasElement
   back?:HTMLCanvasElement
+  bagFront?:HTMLCanvasElement
+  bagBack?:HTMLCanvasElement
+}
+
+/** Replace the baked black fabric albedo while retaining its folds and baked gold details. */
+function recolorBackpack(source:Texture,color:string){
+  const image=source.image as CanvasImageSource&{width:number;height:number}
+  if(!image?.width||!image.height)return null
+  const canvas=document.createElement('canvas');canvas.width=image.width;canvas.height=image.height
+  const ctx=canvas.getContext('2d',{willReadFrequently:true})!
+  ctx.drawImage(image,0,0)
+  const pixels=ctx.getImageData(0,0,canvas.width,canvas.height)
+  const data=pixels.data
+  const target=[1,3,5].map(n=>parseInt(color.slice(n,n+2),16))
+  for(let i=0;i<data.length;i+=4){
+    const r=data[i],g=data[i+1],b=data[i+2]
+    // Gold details already present in the original texture stay warm gold.
+    if(r>28&&r-b>12&&r>g*1.05&&g>b*1.12)continue
+    const shade=(r+g+b)/3
+    // The source fabric is almost black. Use its variation for detail, never as
+    // a multiplier that can turn a selected fabric color back into black.
+    const factor=Math.min(1.13,Math.max(.78,.93+(shade-25)/140))
+    data[i]=Math.min(255,target[0]*factor)
+    data[i+1]=Math.min(255,target[1]*factor)
+    data[i+2]=Math.min(255,target[2]*factor)
+  }
+  ctx.putImageData(pixels,0,0)
+  const texture=new CanvasTexture(canvas)
+  texture.flipY=source.flipY
+  texture.colorSpace=source.colorSpace
+  texture.anisotropy=source.anisotropy
+  return texture
 }
 
 function paint(material:MeshStandardMaterial, color:string, accent:string, front?:CanvasTexture, back?:CanvasTexture){
@@ -42,7 +75,7 @@ function paint(material:MeshStandardMaterial, color:string, accent:string, front
   material.color.set(color)
 }
 
-const printMaterials=new Set(['M_SatinGold','M_BlackBlueTorso'])
+const printMaterials=new Set(['M_SatinGold','M_BlackBlueTorso','M_GiJacket'])
 
 function paintPrint(material:MeshStandardMaterial, art:CanvasTexture){
   art.flipY=false
@@ -59,8 +92,11 @@ function paintPrint(material:MeshStandardMaterial, art:CanvasTexture){
 function paintAuthored(material:MeshStandardMaterial, color:string, accent:string, trim:string){
   const name=material.name
   if(name==='M_GoldFacing'||name==='M_WaistPanel'||name==='M_RoyalBlueSleeve')material.color.set(accent)
-  else if(name==='M_Burgundy'||name==='M_HemBinding'||name==='M_BlackThread'||name==='M_BlackSleeve')material.color.set(color)
-  else if(name==='M_DarkCollar'||name==='M_RoyalBlueBinding')material.color.set(trim)
+  else if(name==='M_Burgundy'||name==='M_HemBinding'||name==='M_BlackThread'||name==='M_BlackSleeve'||name==='M_GiPants')material.color.set(color)
+  else if(name==='M_DarkCollar'||name==='M_RoyalBlueBinding'||name==='M_GiLapel')material.color.set(trim)
+  else if(name==='M_GiBelt')material.color.set('#151515')
+  else if(name==='M_GiRankBar')material.color.set(accent||'#a5141c')
+  else if(name==='M_GiJacket')material.color.set(color)
   else return
   material.map=null
   material.metalnessMap=null
@@ -152,11 +188,22 @@ function splitPrintMesh(mesh:Mesh){
   parent.remove(mesh)
 }
 
-/** SKAWA rash guard, or the authored fight-short model. Generated meshes recolor by material name. The shorts shell takes the live design canvas. */
-export function GlbApparel({url,color,accent,trim=color,hover=false,reducedMotion=false,fit,yaw=0,front,back}:Props){
+/** SKAWA authored models. Apparel accepts print canvases; bags retain their textured construction. */
+export function GlbApparel({url,color,accent,trim=color,hover=false,reducedMotion=false,fit,yaw=0,front,back,bagFront,bagBack}:Props){
+  const backpackHardware=url.startsWith('/models/products/gear-bags.glb')
+  const authoredBag=url.startsWith('/models/gear-bag.glb')||backpackHardware
   const {scene}=useGLTF(url)
   const invalidate=useThree(state=>state.invalidate)
   const root=useRef<Group>(null)
+  const bagDecals=useRef<Mesh[]>([])
+  const bagSourceMap=useMemo(()=>{
+    if(!backpackHardware)return null
+    let map:Texture|null=null
+    scene.traverse(obj=>{const mesh=obj as Mesh;if(!mesh.isMesh)return;const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];const fabric=materials.find(material=>material.name==='Material_0') as MeshStandardMaterial|undefined;if(fabric?.map)map=fabric.map})
+    return map
+  },[scene,backpackHardware])
+  const hasBagArtwork=Boolean(bagFront&&bagBack)
+  const bagFabricMap=useMemo(()=>bagSourceMap&&hasBagArtwork&&color.toLowerCase()!=='#151515'?recolorBackpack(bagSourceMap,color):null,[bagSourceMap,hasBagArtwork,color])
   const model=useMemo(()=>{
     const cloned=scene.clone(true)
     cloned.traverse(obj=>{
@@ -177,6 +224,27 @@ export function GlbApparel({url,color,accent,trim=color,hover=false,reducedMotio
     })
   },[front,back])
 
+  const bagTextures=useMemo(()=>[bagFront,bagBack].map(canvas=>{
+    if(!canvas)return undefined
+    const texture=new CanvasTexture(canvas)
+    texture.flipY=false
+    texture.colorSpace=SRGBColorSpace
+    texture.anisotropy=4
+    return texture
+  }),[bagFront,bagBack])
+
+  const bagAlphaTextures=useMemo(()=>[bagFront,bagBack].map(canvas=>{
+    if(!canvas)return undefined
+    const source=canvas.getContext('2d')!.getImageData(0,0,canvas.width,canvas.height)
+    const mask=document.createElement('canvas');mask.width=canvas.width;mask.height=canvas.height
+    const ctx=mask.getContext('2d')!,pixels=ctx.createImageData(mask.width,mask.height)
+    for(let i=0;i<source.data.length;i+=4){const alpha=source.data[i+3];pixels.data[i]=alpha;pixels.data[i+1]=alpha;pixels.data[i+2]=alpha;pixels.data[i+3]=255}
+    ctx.putImageData(pixels,0,0)
+    const texture=new CanvasTexture(mask)
+    texture.flipY=false
+    return texture
+  }),[bagFront,bagBack])
+
   useLayoutEffect(()=>{
     model.scale.setScalar(1)
     model.position.set(0,0,0)
@@ -193,6 +261,41 @@ export function GlbApparel({url,color,accent,trim=color,hover=false,reducedMotio
   },[model,fit])
 
   useLayoutEffect(()=>{
+    if(!backpackHardware||!hasBagArtwork)return
+    let fabric:Mesh|null=null
+    model.traverse(obj=>{const mesh=obj as Mesh;if(!mesh.isMesh)return;const materials=Array.isArray(mesh.material)?mesh.material:[mesh.material];if(materials.some(item=>item.name==='Material_0'))fabric=mesh})
+    if(!fabric)return
+    model.updateMatrixWorld(true)
+    const bounds=new Box3().setFromObject(fabric)
+    const center=bounds.getCenter(new Vector3()),size=bounds.getSize(new Vector3())
+    const width=size.x*.68,height=size.y*.72,depth=size.z*.47
+    const inverse=model.matrixWorld.clone().invert()
+    const decals=(['front','back'] as const).map(side=>{
+      const frontSide=side==='front'
+      const projectionDepth=frontSide?depth:size.z*.7
+      const position=new Vector3(center.x,center.y,frontSide?bounds.max.z-depth*.32:bounds.min.z+projectionDepth*.38)
+      const geometry=new DecalGeometry(fabric!,position,new Euler(0,frontSide?0:Math.PI,0),new Vector3(width,height,projectionDepth))
+      const uv=geometry.getAttribute('uv')
+      for(let i=0;i<uv.count;i++)uv.setY(i,1-uv.getY(i))
+      geometry.applyMatrix4(inverse)
+      const material=new MeshBasicMaterial({transparent:true,alphaTest:.01,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-4,side:DoubleSide})
+      const decal=new Mesh(geometry,material)
+      decal.name=`Backpack ${side} artwork`
+      decal.renderOrder=2
+      decal.userData.artUv='direct';decal.userData.artSide=side
+      model.add(decal)
+      return decal
+    })
+    bagDecals.current=decals
+    return()=>{decals.forEach(decal=>{model.remove(decal);decal.geometry.dispose();(decal.material as MeshBasicMaterial).dispose()});bagDecals.current=[]}
+  },[model,backpackHardware,hasBagArtwork])
+
+  useLayoutEffect(()=>{
+    bagDecals.current.forEach((decal,index)=>{const material=decal.material as MeshBasicMaterial;material.map=bagTextures[index]??null;material.alphaMap=bagAlphaTextures[index]??null;material.needsUpdate=true;decal.visible=Boolean(material.map&&material.alphaMap)})
+    invalidate()
+  },[bagTextures,bagAlphaTextures,invalidate])
+
+  useLayoutEffect(()=>{
     const [frontMap,backMap]=textures
     if(frontMap&&backMap){
       const pending:Mesh[]=[]
@@ -206,7 +309,7 @@ export function GlbApparel({url,color,accent,trim=color,hover=false,reducedMotio
         const count=mesh.geometry.getAttribute('position')?.count??0
         if(count>largestCount){largest=mesh;largestCount=count}
       })
-      if(!pending.length&&largest)pending.push(largest)
+      if(!pending.length&&largest&&!authoredBag)pending.push(largest)
       pending.forEach(splitPrintMesh)
     }
     model.traverse(obj=>{
@@ -218,7 +321,26 @@ export function GlbApparel({url,color,accent,trim=color,hover=false,reducedMotio
       else if(side==='back'&&backMap)paintPrint(materials[0] as MeshStandardMaterial,backMap)
       else materials.forEach(material=>{
         const std=material as MeshStandardMaterial
-        if(std.name.startsWith('M_')){if(frontMap)paintAuthored(std,color,accent,trim)}
+        if(backpackHardware&&(std.name.startsWith('Hardware |')||std.name.startsWith('Zipper teeth |'))){
+          std.metalness=Math.min(std.metalness,.35)
+          std.emissive.setRGB(.10,.052,.007)
+          return
+        }
+        if(backpackHardware&&std.name.startsWith('Zipper tape |')){std.color.set(trim);return}
+        if(authoredBag){
+          // Keep the bag texture, pocket layout and gold hardware visible in 3D.
+          // Artwork placement remains in the 2D proof until print zones are approved.
+          if(frontMap&&std.name.startsWith('01 |'))std.color.set(color)
+          if(backpackHardware&&std.name==='Material_0'){
+            std.map=bagFabricMap??bagSourceMap
+            std.color.set('#ffffff')
+            std.emissiveMap=std.map
+            std.emissive.set('#ffffff')
+            std.emissiveIntensity=bagFabricMap?.18:2.5
+            std.needsUpdate=true
+          }
+        }
+        else if(std.name.startsWith('M_')){paintAuthored(std,color,accent,trim)}
         else if(!frontMap&&!backMap&&std.map)return
         else paint(std,color,accent,frontMap,backMap)
         if(std.name==='front'||std.name==='back')mesh.userData.artUv='flipped'
@@ -226,9 +348,12 @@ export function GlbApparel({url,color,accent,trim=color,hover=false,reducedMotio
     })
     textures.forEach(texture=>{if(texture)texture.needsUpdate=true})
     invalidate()
-  },[model,color,accent,trim,textures,invalidate])
+  },[model,color,accent,trim,textures,invalidate,authoredBag,backpackHardware,bagFabricMap,bagSourceMap])
 
   useEffect(()=>()=>{textures.forEach(texture=>texture?.dispose())},[textures])
+  useEffect(()=>()=>{bagTextures.forEach(texture=>texture?.dispose())},[bagTextures])
+  useEffect(()=>()=>{bagAlphaTextures.forEach(texture=>texture?.dispose())},[bagAlphaTextures])
+  useEffect(()=>()=>{bagFabricMap?.dispose()},[bagFabricMap])
 
   useLayoutEffect(()=>{
     if(root.current)root.current.rotation.y=yaw

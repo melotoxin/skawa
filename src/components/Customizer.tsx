@@ -2,7 +2,7 @@ import {Component,Suspense,lazy,useEffect,useMemo,useRef,useState,type ChangeEve
 import {ArrowLeft,ArrowRight,Check,Download,ImagePlus,RotateCcw,RotateCw,Save,Upload,X,ZoomIn,ZoomOut} from 'lucide-react'
 import {products} from '../data'
 import {go} from '../routing'
-import {defaultDesign,defaultSize,downloadFile,fonts,isDesign,paintDesign,palette,patterns,readDesigns,type Design,type DesignSide,type Placement,type SavedDesign,type ZonePlacement} from '../lib/customDesign'
+import {defaultDesign,defaultSize,downloadFile,fonts,isDesign,paintBagOverlay,paintDesign,palette,patterns,readDesigns,type Design,type DesignSide,type Placement,type SavedDesign,type ZonePlacement} from '../lib/customDesign'
 import {moveArt,pickArt,type ArtKey,type ArtTarget} from '../lib/artPlacement'
 import {getTemplate} from '../lib/customizer2d/templates'
 import {preloadTemplate} from '../lib/customizer2d/compose'
@@ -149,7 +149,7 @@ export default function Customizer(){
   const[busy,setBusy]=useState(false)
   const[history,setHistory]=useState<Design[]>([])
   const[future,setFuture]=useState<Design[]>([])
-  const[frames,setFrames]=useState<{front:HTMLCanvasElement;back:HTMLCanvasElement;proofFront:string;proofBack:string}|null>(null)
+  const[frames,setFrames]=useState<{front:HTMLCanvasElement;back:HTMLCanvasElement;proofFront:string;proofBack:string;bagFront?:HTMLCanvasElement;bagBack?:HTMLCanvasElement}|null>(null)
   const[rendering,setRendering]=useState(true)
   const[noWebGL,setNoWebGL]=useState(()=>!canUseWebGL())
   const[activeArt,setActiveArt]=useState<ArtKey|null>(null)
@@ -181,7 +181,7 @@ export default function Customizer(){
   const art:ArtTarget={text:design.text,textPlacement:design.textPlacement,hasLogo:!!design.logo,logoPlacement:design.logoPlacement,logoAspect,mirrorText:design.mirrorText??design.mirrorArt??false,mirrorLogo:design.mirrorLogo??design.mirrorArt??false}
   useEffect(()=>{if(!design.logo){setLogoAspect(1);return};const img=new Image();img.onload=()=>setLogoAspect(img.naturalHeight/Math.max(1,img.naturalWidth)||1);img.src=design.logo},[design.logo])
   useEffect(()=>{const sizes=sizesFor(product);if(!sizes.includes(designRef.current.size))setDesign(d=>({...d,size:defaultSize(sizes)}))},[product])
-  useEffect(()=>{let active=true;if(!dragging.current)setRendering(true);Promise.all([paintDesign(design,product,'front'),paintDesign(design,product,'back'),paintDesign(design,product,'front',true),paintDesign(design,product,'back',true)]).then(([front,back,pf,pb])=>{if(active){setFrames({front,back,proofFront:pf.toDataURL(),proofBack:pb.toDataURL()});setRendering(false)}}).catch(()=>{if(active){setRendering(false);setError('The preview could not render this artwork. Remove the logo and try another image.')}});return()=>{active=false}},[design,product])
+  useEffect(()=>{let active=true;if(!dragging.current)setRendering(true);Promise.all([paintDesign(design,product,'front'),paintDesign(design,product,'back'),paintDesign(design,product,'front',true),paintDesign(design,product,'back',true),product.slug==='gear-bags'?paintBagOverlay(design,'front'):Promise.resolve(undefined),product.slug==='gear-bags'?paintBagOverlay(design,'back'):Promise.resolve(undefined)]).then(([front,back,pf,pb,bagFront,bagBack])=>{if(active){setFrames({front,back,proofFront:pf.toDataURL(),proofBack:pb.toDataURL(),bagFront,bagBack});setRendering(false)}}).catch(()=>{if(active){setRendering(false);setError('The preview could not render this artwork. Remove the logo and try another image.')}});return()=>{active=false}},[design,product])
   useEffect(()=>()=>{uploadToken.current++},[])
   useEffect(()=>{let live=true;if(!design.logo){setLogoInfo(null);return};analyzeLogo(design.logo).then(info=>{if(live)setLogoInfo(info)}).catch(()=>{if(live)setLogoInfo(null)});return()=>{live=false}},[design.logo])
   const restore=(next:Design)=>{uploadToken.current++;setBusy(false);setHistory(h=>[...h.slice(-19),design]);setFuture([]);setDesign(next);setSavedId('');setError('');setPreview('front')}
@@ -232,11 +232,14 @@ export default function Customizer(){
   const proofs=template2d?<Proof2D template={template2d} productName={product.name} design={design} active={shownArt} fallback={photoProofs} onGrab={beginArtDrag} onMove={moveZoneArt} onEnd={endArtDrag}/>:photoProofs
   // In 2D, templated products place artwork by print zone; 3D keeps the shared placements.
   const in2d=mode!=='3d'||noWebGL
+  const bagModelPreview=(product.slug==='sports-bags'||product.slug==='gear-bags')&&!in2d
+  const backpackPreview=product.slug==='gear-bags'&&!in2d
+  const bagModelName=product.slug==='gear-bags'?'backpack':'duffel'
   const zoned=in2d&&template2d?template2d:null
   // What the 2D preview can show: every control on a templated product must have a visible effect.
   const can=zoned?zoned.supports:{baseColor:true,trim:true,accent:true,pattern:true,logo:true,text:true}
   const photo2d=in2d&&!template2d
-  const colorHelp=!in2d?'Colors apply directly to the garment preview. Choose Design to add a pattern or accent color.':zoned?'Colors apply to the garment in the 2D proof. Choose Design to add a pattern or accent color.':'This product has a photo preview in 2D. Your colors show as chips beside it and appear on your production proof.'
+  const colorHelp=backpackPreview?'Fabric, zipper tape, patterns, text and logos update on the 3D backpack. Gold zipper teeth and pulls stay gold.':bagModelPreview?`The ${bagModelName} model previews its base fabric color. Use the 2D proof to review logo and text placement; final print zones need approval.`:!in2d?'Colors apply directly to the garment preview. Choose Design to add a pattern or accent color.':zoned?'Colors apply to the garment in the 2D proof. Choose Design to add a pattern or accent color.':'This product has a photo preview in 2D. Your colors show as chips beside it and appear on your production proof.'
   const offPalette=zoned?.palette&&!zoned.palette.includes(design.color.toLowerCase())?nearestColor(zoned.palette,design.color):null
   const unsupported=(what:string)=><p className="dl-help">{what} {what.endsWith('s')?'are':'is'} not shown on the {product.name} 2D proof. Switch to 3D, or note it in your quote request.</p>
   const zoneFields=(kind:ZoneKind,label:string,mirror:boolean,onMirror:(on:boolean)=>void)=>{
@@ -267,12 +270,12 @@ export default function Customizer(){
     <div className="dl-workspace">
       <div className="dl-preview-column"><div className="dl-stage">
         <div className="dl-preview-toolbar"><span>{mode==='3d'&&!noWebGL?'3D LIVE PREVIEW':'2D DESIGN PROOF'}</span><div><button aria-pressed={mode==='3d'} onClick={()=>{if(!canUseWebGL()){setNoWebGL(true);setMode('2d');setError('3D is unavailable on this device. Continue designing with the front and back proofs.');return}setNoWebGL(false);setError('');setMode('3d');setPreview('front')}}>3D</button><button aria-pressed={mode==='2d'} onClick={()=>{setMode('2d');setPreview(view==='back'?'back':'front')}}>2D</button></div></div>
-        <div className="dl-canvas" role="group" aria-label={`Interactive ${product.name} preview. Drag a name or logo to move it. Drag it onto the back to place it there. Drag empty fabric to rotate in 3D.`}>
-          {mode==='3d'&&!noWebGL&&frames?<PreviewBoundary fallback={<><div className="dl-preview-error">3D unavailable on this device. Your front and back proofs remain available.</div>{proofs}</>}><Suspense fallback={proofs}><Scene product={product} front={frames.front} back={frames.back} color={design.color} accent={design.accent} trim={design.trim} view={view} zoom={zoom} spin={spin&&!reducedMotion} art={art} onArtGrab={beginArtDrag} onArtMove={moveArtPlacement} onArtEnd={endArtDrag} onUnavailable={()=>{setNoWebGL(true);setError('3D is unavailable on this device. Continue designing with the front and back proofs.')}}/></Suspense></PreviewBoundary>:proofs}
+        <div className="dl-canvas" role="group" aria-label={backpackPreview?`Interactive ${product.name} preview. Drag a name or logo to move it. Drag empty fabric to rotate in 3D.`:bagModelPreview?`Interactive ${product.name} 3D model. Drag to rotate; switch to 2D for logo and text placement.`:`Interactive ${product.name} preview. Drag a name or logo to move it. Drag it onto the back to place it there. Drag empty fabric to rotate in 3D.`}>
+          {mode==='3d'&&!noWebGL&&frames?<PreviewBoundary fallback={<><div className="dl-preview-error">3D unavailable on this device. Your front and back proofs remain available.</div>{proofs}</>}><Suspense fallback={proofs}><Scene product={product} front={frames.front} back={frames.back} bagFront={frames.bagFront} bagBack={frames.bagBack} color={design.color} accent={design.accent} trim={design.trim} view={view} zoom={zoom} spin={spin&&!reducedMotion} art={art} onArtGrab={beginArtDrag} onArtMove={moveArtPlacement} onArtEnd={endArtDrag} onUnavailable={()=>{setNoWebGL(true);setError('3D is unavailable on this device. Continue designing with the front and back proofs.')}}/></Suspense></PreviewBoundary>:proofs}
         </div>
         {photo2d&&<div className="dl-photo-preview"><p className="dl-photo-badge">Photo preview — colors and patterns appear on your production proof</p><ul aria-label="Your colors">{([['Base',design.color],['Trim',design.trim],['Accent',design.accent]] as const).map(([name,hex])=><li key={name}><i style={{background:hex}}/>{name}<b>{hex.toUpperCase()}</b></li>)}{design.pattern!=='solid'&&<li className="dl-photo-preview__pattern">{design.pattern} pattern</li>}</ul></div>}
         {mode==='3d'&&<div className="dl-camera"><div role="group" aria-label="Preview angle">{['front','back','left','right'].map(side=><button key={side} aria-pressed={view===side} onClick={()=>setPreview(side)}>{side}</button>)}</div><div><button aria-label="Zoom out" disabled={zoom<=.8} onClick={()=>setZoom(z=>Math.max(.8,z-.15))}><ZoomOut/></button><button aria-label="Zoom in" disabled={zoom>=1.6} onClick={()=>setZoom(z=>Math.min(1.6,z+.15))}><ZoomIn/></button><button aria-label="Auto rotate preview" aria-pressed={spin} disabled={reducedMotion} onClick={()=>setSpin(s=>!s)}><RotateCw/></button></div></div>}
-        <p className="dl-preview-note">{mode==='3d'?'Drag a name or logo to place it. Drag it around to the back to move it there. Drag empty fabric to rotate.':'Front and back design proofs. Drag a name or logo on the garment.'}<span>Production fit and print placement require an approved sample.</span></p>
+        <p className="dl-preview-note">{backpackPreview?'Drag a name or logo to place it. Drag empty fabric to rotate the model.':bagModelPreview?`Drag to rotate the real ${bagModelName} model. Switch to 2D to place text and logos.`:mode==='3d'?'Drag a name or logo to place it. Drag it around to the back to move it there. Drag empty fabric to rotate.':'Front and back design proofs. Drag a name or logo on the garment.'}<span>Production fit and print placement require an approved sample.</span></p>
         {rendering&&<span className="dl-updating" role="status">Updating preview…</span>}
       </div><div className="dl-product-caption"><img src={product.image} alt={`${product.name} catalog reference`}/><div><small>YOUR PRODUCT</small><h3>{product.name}</h3><span>{product.category} · {product.availability}</span></div><b>{product.price}<small>Base price / quote review</small></b></div></div>
 

@@ -208,8 +208,8 @@ function garment(view: LoadedView, input: ComposeInput, target: HTMLCanvasElemen
   reset(ctx)
   ctx.drawImage(at(view.base, width, height), 0, 0)
   if (input.use.baseColor) paintRegion(ctx, view, width, height, [view.body], c => { c.fillStyle = input.color; c.fillRect(0, 0, width, height) })
-  if (input.use.pattern && input.pattern !== 'solid' && view.pattern) {
-    paintRegion(ctx, view, width, height, [view.pattern, view.body], c => drawPattern(c, width, height, input.pattern, input.color, input.accent))
+  if (input.use.pattern && input.pattern !== 'solid' && (view.pattern || view.body)) {
+    paintRegion(ctx, view, width, height, [view.pattern ?? view.body, view.body], c => drawPattern(c, width, height, input.pattern, input.color, input.accent))
   }
   if (input.use.trim && view.trim) paintRegion(ctx, view, width, height, [view.trim], c => { c.fillStyle = input.trim; c.fillRect(0, 0, width, height) })
   garments.set(target, {key, view, canvas})

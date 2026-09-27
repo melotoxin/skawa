@@ -85,8 +85,7 @@ export const templates: Record<string, Template2D> = {
     id: 'gi',
     aspect: 0.8,
     size: [1200, 1500],
-    supports: {baseColor: true, trim: false, accent: false, pattern: false, logo: true, text: true},
-    palette: ['#f4f4f1', '#1d3f8f', '#151515'],
+    supports: ALL,
     views: {
       front: view('gi', 'front', [
         {id: 'leftChest', label: 'Left chest', polygon: rect(0.53, 0.15, 0.69, 0.27), accepts: ['logo', 'text'], maxWidth: 0.12, defaults: ['logo'], counterpart: 'upperBack'},

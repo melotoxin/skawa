@@ -9,7 +9,7 @@ import {moveArt,pickArt,type ArtKey,type ArtTarget} from '../../lib/artPlacement
 import {apparelModelUrl} from '../../lib/productModels'
 import {GlbApparel} from '../product3d/GlbApparel'
 
-type Props={product:Product;front:HTMLCanvasElement;back:HTMLCanvasElement;color:string;accent?:string;trim?:string;view:string;zoom:number;spin:boolean;onUnavailable:()=>void;art:ArtTarget;onArtGrab:(key:ArtKey)=>void;onArtMove:(key:ArtKey,placement:Placement)=>void;onArtEnd:()=>void}
+type Props={product:Product;front:HTMLCanvasElement;back:HTMLCanvasElement;bagFront?:HTMLCanvasElement;bagBack?:HTMLCanvasElement;color:string;accent?:string;trim?:string;view:string;zoom:number;spin:boolean;onUnavailable:()=>void;art:ArtTarget;onArtGrab:(key:ArtKey)=>void;onArtMove:(key:ArtKey,placement:Placement)=>void;onArtEnd:()=>void}
 function Garment({product,front,back,color}:Props){
   const geometry=useMemo(()=>{
     const s=new Shape();outline(product).forEach(([x,y],i)=>i?s.lineTo(x,y):s.moveTo(x,y));s.closePath()
@@ -150,7 +150,7 @@ export default function DesignPreview3D(props:Props){
     <ambientLight intensity={1.6}/><directionalLight position={[3,4,5]} intensity={2.2}/><directionalLight position={[-3,1,-4]} intensity={1.7}/>
     <Suspense fallback={null}>
       {apparelModelUrl(props.product)
-        ?<GlbApparel url={apparelModelUrl(props.product)!} color={props.color} accent={props.accent||'#e2232a'} trim={props.trim||props.color} view={props.view} front={props.front} back={props.back} reducedMotion/>
+        ?<GlbApparel url={apparelModelUrl(props.product)!} color={props.color} accent={props.accent||'#e2232a'} trim={props.trim||props.color} view={props.view} front={props.front} back={props.back} bagFront={props.bagFront} bagBack={props.bagBack} reducedMotion/>
         :<Garment {...props}/>}
     </Suspense>
     <Camera view={props.view} zoom={props.zoom}/>

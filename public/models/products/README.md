@@ -41,7 +41,14 @@ The raw files average about 1.7 MB; the optimized ones about 0.8 MB.
 | `shin-pads.glb` | Shin Pads | `shin-pads.png` | 802 KB | `02a6dc60-5914-4cb5-8a11-66f4bc65483c` |  |
 | `hand-wraps.glb` | Hand Wraps | `hand-wraps.png` | 564 KB | `8c68d892-7056-4264-8cba-61ac13410306` |  |
 | `sports-bags.glb` | Sports Bags | `sports-bags.png` | 586 KB | `3c1b3ed0-3e73-4d62-bb1e-472334431757` |  |
-| `gear-bags.glb` | Gear Bags | `gear-bags.png` | 873 KB | `9d7239bd-66f0-4532-be44-2c944c96a716` |  |
+| `gear-bags.glb` | Gear Bags | `gear-bags.png` | ~1.2 MB | `9d7239bd-66f0-4532-be44-2c944c96a716` | Original textured backpack mesh and UVs retained; gold front zipper teeth and pulls added in Blender |
+
+The Gear Bags backpack now has an editable Blender source at
+`D:/blender/blender/bag/output/black_gear_backpack.blend`. Its repeatable edit
+script is `D:/blender/blender/bag/improve_backpack.py` and its untouched input
+GLB is `D:/blender/blender/bag/source/gear-bags-original.glb`. The script exports
+back to `public/models/products/gear-bags.glb` with meshopt and WebP. The Sports
+Bags duffel is a different product and uses `public/models/gear-bag.glb`.
 
 ## Replacing a model
 

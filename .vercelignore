@@ -25,6 +25,3 @@ public/images/*.png
 public/images/*.jpg
 
 # Dev-only 3D sources (used by scripts/customizer-render to rebuild 2D layers; the site uses public/models/products)
-public/models/bjj-gi.glb
-public/models/fight-short.glb
-public/models/rash-guard.glb
