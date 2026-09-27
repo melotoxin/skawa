@@ -32,7 +32,7 @@ const DISCIPLINES=[
     num:'01',
     title:'DESIGN',
     copy:'Color systems, artwork zones, logos and production-ready proofs shaped around your identity.',
-    image:'/images/ref/path-private-label.jpg',
+    image:'/images/ref/path-private-label.webp',
     alt:'Brand concept workspace with technical fightwear sketches and labels',
     position:'center 42%',
     to:'/customize',
@@ -42,7 +42,7 @@ const DISCIPLINES=[
     num:'02',
     title:'MANUFACTURE',
     copy:'Sampling through construction, decoration and final inspection — efficient without cutting corners.',
-    image:'/images/ref/manufacturing-sewing.jpg',
+    image:'/images/ref/manufacturing-sewing.webp',
     alt:'Hands stitching a SKAWA branded patch on technical fabric',
     position:'center 45%',
     to:'/process',
@@ -52,10 +52,10 @@ const DISCIPLINES=[
     num:'03',
     title:'FULFILL',
     copy:'Approved packing, clear reorder paths and worldwide shipping readiness for academies and brands.',
-    image:'/images/ref/path-academy-collection.jpg',
+    image:'/images/ref/path-academy-collection.webp',
     alt:'Complete fightwear collection ready for academy and brand fulfillment',
     position:'center 40%',
-    to:'/request-mockup',
+    to:'/request-mockup?intent=about_project',
     cta:'START A BRIEF',
   },
 ] as const
@@ -109,7 +109,7 @@ export function AboutPage(){
   return <PageFrame><main className="about-page" ref={pageRef}>
     <section className="about-hero" aria-labelledby="about-hero-title">
       <div className="about-hero__media" aria-hidden="true">
-        <img src="/images/ref/hero-fighter-front.jpg" alt=""/>
+        <img src="/images/ref/hero-fighter-front.webp" alt=""/>
         <div className="about-hero__shade"/>
       </div>
       <div className="about-hero__copy">
@@ -117,7 +117,7 @@ export function AboutPage(){
         <h1 id="about-hero-title">THREE DECADES.<br/>ONE STANDARD.<br/><em>FIGHT.</em></h1>
         <p className="about-hero__lede">Premium custom BJJ gis, rash guards, shorts, boxing gloves and combat apparel — built for brands, academies and athletes who need gear that performs.</p>
         <div className="about-hero__actions">
-          <Link className="ref-btn red" to="/request-mockup?intent=about-hero">START A PROJECT</Link>
+          <Link className="ref-btn red" to="/request-mockup?intent=about_project">START A PROJECT</Link>
           <Link className="ref-btn outline" to="/process">SEE HOW WE WORK</Link>
         </div>
       </div>
@@ -150,7 +150,7 @@ export function AboutPage(){
           </div>
         </div>
         <div className="about-story__visual about-reveal" data-delay="2">
-          <img src="/images/ref/path-academy-collection.jpg" alt="SKAWA fightwear collection lineup" loading="lazy"/>
+          <img src="/images/ref/path-academy-collection.webp" alt="SKAWA fightwear collection lineup" loading="lazy"/>
           <div className="about-story__visual-shade"/>
           <div className="about-story__chips" aria-label="Product categories">
             {PRODUCT_CHIPS.map(chip=><span key={chip}>{chip}</span>)}
@@ -196,7 +196,7 @@ export function AboutPage(){
           </div>
         </div>
         <div className="about-feature__media about-reveal" data-delay="1">
-          <img src="/images/ref/cat-fight-shorts.jpg" alt="Custom fight shorts with branded pattern" loading="lazy"/>
+          <img src="/images/ref/cat-fight-shorts.webp" alt="Custom fight shorts with branded pattern" loading="lazy"/>
           <div className="about-feature__badge"><b>YOUR MARK</b><span>DESIGN → SAMPLE → PRODUCE</span></div>
         </div>
       </section>
@@ -211,11 +211,11 @@ export function AboutPage(){
           </ul>
           <div className="about-feature__actions">
             <Link className="ref-btn outline" to="/process">EXPLORE THE PROCESS</Link>
-            <Link className="ref-btn red" to="/sample-kit">REQUEST SAMPLES</Link>
+            <Link className="ref-btn red" to="/request-mockup?intent=sample_request">REQUEST SAMPLES</Link>
           </div>
         </div>
         <div className="about-feature__media about-reveal" data-delay="1">
-          <img src="/images/ref/atmos-belt-tie.jpg" alt="Close-up of martial arts belt and construction detail" loading="lazy"/>
+          <img src="/images/ref/atmos-belt-tie.webp" alt="Close-up of martial arts belt and construction detail" loading="lazy"/>
           <div className="about-feature__badge"><b>QC FIRST</b><span>SPEC · BUILD · INSPECT</span></div>
         </div>
       </section>
@@ -235,8 +235,10 @@ export function AboutPage(){
           return (
             <article key={value.title} className="about-reveal" data-delay={String((index%4)+1)}>
               <Icon aria-hidden="true"/>
-              <b>{String(index+1).padStart(2,'0')}</b>
-              <h3>{value.title}</h3>
+              <div className="about-values__title">
+                <b>{String(index+1).padStart(2,'0')}</b>
+                <h3>{value.title}</h3>
+              </div>
               <p>{value.copy}</p>
             </article>
           )
@@ -246,7 +248,7 @@ export function AboutPage(){
 
     <section className="about-finale" aria-labelledby="partner-title">
       <div className="about-finale__media" aria-hidden="true">
-        <img src="/images/ref/final-cta-boxer.jpg" alt="" loading="lazy"/>
+        <img src="/images/ref/final-cta-boxer.webp" alt="" loading="lazy"/>
         <div className="about-finale__shade"/>
       </div>
       <div className="about-finale__content about-reveal">
@@ -254,11 +256,27 @@ export function AboutPage(){
         <h2 id="partner-title">BRING YOUR VISION<br/><em>TO THE MAT.</em></h2>
         <p>Three decades of custom fightwear expertise behind every brief. Academy kits, athlete lines or private-label manufacturing — design through delivery.</p>
         <div className="about-finale__actions">
-          <Link className="ref-btn red" to="/request-mockup?intent=about-partner">START A PROJECT</Link>
+          <Link className="ref-btn red" to="/request-mockup?intent=about_project">START A PROJECT</Link>
           <Link className="ref-btn outline" to="/academy">GYM & ACADEMY</Link>
         </div>
       </div>
     </section>
+  </main></PageFrame>
+}
+
+const LEGAL={
+  privacy:{title:'Privacy Policy',copy:'SKAWA Fight stores designs, briefs and newsletter addresses in this browser until a production account system is connected. We do not sell contact details. Project files you upload stay with the brief you submit.'},
+  terms:{title:'Terms of Service',copy:'Catalog prices marked as quotes are confirmed after a brief review. Custom colors, artwork and sizing are approved on a sample before a production run. Orders are not charged from this site.'},
+  cookies:{title:'Cookies',copy:'This site uses browser storage for your bag, saved designs and project briefs. It does not set advertising cookies. Clearing site data removes those local records.'},
+} as const
+
+export function LegalPage({kind}:{kind:'privacy'|'terms'|'cookies'}){
+  const page=LEGAL[kind]
+  return <PageFrame><main className="legal-page">
+    <p className="sk-eyebrow">SKAWA FIGHT</p>
+    <h1>{page.title}</h1>
+    <p>{page.copy}</p>
+    <Link to="/request-mockup?intent=support">Questions <ArrowRight/></Link>
   </main></PageFrame>
 }
 

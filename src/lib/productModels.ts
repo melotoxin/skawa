@@ -97,6 +97,65 @@ export function resolveModelPath(product:Pick<Product,'slug'|'category'|'model'|
   return `/models/${modelFileByKind[kind]}`
 }
 
+/** Family fallback for catalog products without their own model (the ranked rash guards). Others stay procedural. */
+const shippedModelByKind:Partial<Record<GearKind,string>>={
+  rashguard:'/models/products/rash-guard-family.glb?v=opt',
+}
+
+/** Blender-authored SKAWA assets supplied for these exact catalog silhouettes. */
+const blenderModelBySlug:Record<string,string>={
+  'fight-short':'/models/fight-short.glb?v=blender-web3',
+  'elite-fight-shorts':'/models/fight-short.glb?v=blender-web3',
+  'academy-gold-shorts':'/models/fight-short.glb?v=blender-web3',
+  'shadow-series':'/models/fight-short.glb?v=blender-web3',
+  'crimson-training-shorts':'/models/fight-short.glb?v=blender-web3',
+  'reign-fight-shorts':'/models/fight-short.glb?v=blender-web3',
+  'stealth-pro':'/models/fight-short.glb?v=blender-web3',
+  'full-sleeves':'/models/rash-guard.glb?v=blender',
+  'sports-bags':'/models/gear-bag.glb?v=blender',
+  'bjj-gi':'/models/bjj-gi.glb?v=blender-gi',
+  'kids-bjj-gi':'/models/bjj-gi.glb?v=blender-gi',
+}
+
+/**
+ * Product-specific models, generated from each product's own catalog photo (Higgsfield · SAM 3 3D) and
+ * optimized with meshopt + WebP (see public/models/products/README.md). Products that share a photo share a model.
+ */
+const productModelBySlug:Record<string,string>={
+  'bjj-gi':'bjj-gi',
+  'kids-bjj-gi':'kids-bjj-gi',
+  'fight-short':'fight-short',
+  'elite-fight-shorts':'shorts-gold',
+  'academy-gold-shorts':'shorts-gold',
+  'shadow-series':'shorts-red',
+  'crimson-training-shorts':'shorts-red',
+  'reign-fight-shorts':'shorts-white',
+  'stealth-pro':'shorts-camo',
+  'grappling-shorts':'grappling-shorts',
+  'boxing-trunks':'boxing-trunks',
+  'spats-compression-pants':'spats-compression-pants',
+  'full-sleeves':'full-sleeves',
+  'short-sleeves':'short-sleeves',
+  'karate-uniform':'karate-uniform',
+  'judo-uniform':'judo-uniform',
+  'jiu-jitsu-belts':'jiu-jitsu-belts',
+  'boxing-gloves':'boxing-gloves',
+  'mma-gloves':'mma-gloves',
+  'focus-mitts':'focus-mitts',
+  'shin-pads':'shin-pads',
+  'hand-wraps':'hand-wraps',
+  'sports-bags':'sports-bags',
+  'gear-bags':'gear-bags',
+}
+
+export function apparelModelUrl(product:Pick<Product,'slug'|'category'|'modelKind'>):string|null{
+  const authored=blenderModelBySlug[product.slug]
+  if(authored)return authored
+  const own=productModelBySlug[product.slug]
+  if(own)return `/models/products/${own}.glb?v=${own==='gear-bags'?'gold-backpack-1':'sam3'}`
+  return shippedModelByKind[resolveGearKind(product)]??null
+}
+
 /** Attach model + modelKind defaults onto every catalog product. */
 export function attachModels<T extends Product>(list:T[]):T[]{
   return list.map(product=>{

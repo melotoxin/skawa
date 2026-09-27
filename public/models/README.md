@@ -1,44 +1,26 @@
-# SKAWA FIGHT — 3D model pipeline
+# SKAWA Fight 3D assets
 
-Catalog cards look for GLB files under this folder. If a file is missing, the shop
-renders a procedural Three.js mesh (dark metallic fightwear) automatically.
+The product model router (`src/lib/productModels.ts`) uses these Blender-authored
+GLBs for the matching catalog products. These are real geometry, not rotating
+product photographs:
 
-## Expected files
+| Catalog product | Web asset | Blender source |
+| --- | --- | --- |
+| Full Sleeves | `rash-guard.glb` | `D:/blender/blender/shirt/output/skawa_rashguard_web.glb` |
+| Fight Short | `fight-short.glb` | `D:/blender/blender/shorts/output/muay_thai_shorts_web.glb` |
+| Sports Bags | `gear-bag.glb` | `D:/blender/blender/bag/output/black_duffel_bag.glb` |
+| BJJ Gi / Kids BJJ Gi | `bjj-gi.glb` | `E:/Video Promo/bjj-gi-scene/bjj_gi_clothes.blend` |
 
-| File | Used for |
-|------|----------|
-| `bjj-gi.glb` | Gis |
-| `rash-guard.glb` | Rash guards |
-| `fight-short.glb` | Fight shorts |
-| `gloves.glb` | Boxing gloves |
-| `mma-gloves.glb` | MMA gloves |
-| `belt.glb` | Belts |
-| `gear-bag.glb` | Bags |
-| `shin-pads.glb` | Shin pads |
-| `focus-mitts.glb` | Focus mitts |
-| `hand-wraps.glb` | Hand wraps |
-| `mouth-guard.glb` | Mouth guards |
-| `spats.glb` | Spats |
-| `boxing-trunks.glb` | Boxing trunks |
-| `uniform.glb` | Karate / judo uniforms |
+The two apparel models also appear in the live customizer. The duffel keeps
+its distinct nylon, leather and gold materials in both product and customizer
+3D views. Its 3D view currently previews the base color; the 2D proof remains
+the artwork-placement reference until production UV/print zones are approved.
 
-## Blender export (quick)
+`fight-short.glb` is a web-optimized repack of the supplied model. Its opaque
+4K PNG textures were resized to 2K JPEG using
+`scripts/optimize-glb-images.mjs`; geometry, materials and source Blender files
+were not changed. The original export remains in the Blender folder.
 
-1. Model at ~1 unit tall, origin at ground center.
-2. Apply transforms (`Ctrl+A` → All Transforms).
-3. Export → glTF 2.0 (`.glb`), Y-up, +Z forward, apply modifiers.
-4. Drop the file here using the name from the table above.
-5. Hard-refresh `/shop` — `HEAD` probe will pick it up and replace the procedural mesh.
-
-Optional Blender batch:
-
-```python
-import bpy
-# Select object, then:
-bpy.ops.export_scene.gltf(
-    filepath="//rash-guard.glb",
-    export_format="GLB",
-    use_selection=True,
-    export_yup=True,
-)
-```
+Other catalog items use their own models in `products/` or a procedural
+fallback. The Gear Bags catalog image depicts a backpack, so it deliberately
+does **not** use the duffel model.

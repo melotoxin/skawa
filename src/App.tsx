@@ -3,7 +3,7 @@ import {CustomizePage,NotFound} from './pages/Pages'
 import {AcademyPage,LeadRequestPage,PrivateLabelPage,ProcessPage,SampleKitPage} from './pages/MarketingPages'
 import ProductDetailPage from './pages/ProductDetailPage'
 import TrackOrderPage from './pages/TrackOrderPage'
-import {AboutPage,AccountPage} from './pages/UtilityPages'
+import {AboutPage,AccountPage,LegalPage} from './pages/UtilityPages'
 import CommerceCatalogPage from './pages/CommerceCatalogPage'
 import SelectedFightwearPage from './pages/SelectedFightwearPage'
 import PageTransition from './components/PageTransition'
@@ -24,6 +24,9 @@ export default function App(){
  else if(path==='/sample-kit')page=<SampleKitPage/>
  else if(path==='/request-mockup')page=<LeadRequestPage/>
  else if(path==='/about')page=<AboutPage/>
+ else if(path==='/privacy')page=<LegalPage kind="privacy"/>
+ else if(path==='/terms')page=<LegalPage kind="terms"/>
+ else if(path==='/cookies')page=<LegalPage kind="cookies"/>
  else if(path==='/account')page=<AccountPage/>
  else if(path==='/selected-fightwear'||path==='/work'||path.startsWith('/selected-fightwear/'))page=<SelectedFightwearPage route={path}/>
  else page=<NotFound/>

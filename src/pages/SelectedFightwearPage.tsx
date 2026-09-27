@@ -1,4 +1,5 @@
 import {ArrowLeft,ArrowRight,Check,FileCheck2,FlaskConical,Layers3,ShieldCheck,Sparkles} from 'lucide-react'
+import {useEffect} from 'react'
 import {Link} from '../routing'
 import {NotFound,PageFrame} from './Pages'
 import '../selected-fightwear.css'
@@ -9,7 +10,7 @@ const cases=[
     number:'01',
     title:'Academy identity system',
     category:'DEMO ACADEMY COLLECTION',
-    image:'/images/ref/client-team-skawa.jpg',
+    image:'/images/ref/client-team-skawa.webp',
     summary:'A hypothetical collection showing how one visual identity can extend across athlete, coach and supporter products without implying a completed client engagement.',
     deliverables:['Competition fight shorts','Coordinated teamwear direction','Placement and color system'],
     route:['Brief','Digital mockup','Sample review','Team production'],
@@ -22,7 +23,7 @@ const cases=[
     number:'02',
     title:'Private-label starter line',
     category:'DEMO BRAND CONCEPT',
-    image:'/images/ref/path-private-label.jpg',
+    image:'/images/ref/path-private-label.webp',
     summary:'A non-client example of the decisions behind a focused first collection: product mix, trims, packaging and a repeatable production specification.',
     deliverables:['Three-product capsule direction','Label and packaging touchpoints','Production-ready approval path'],
     route:['Brand brief','Material selection','Prototype','Quality control'],
@@ -35,7 +36,7 @@ const cases=[
     number:'03',
     title:'Athlete signature short',
     category:'DEMO PRODUCT CONCEPT',
-    image:'/images/ref/cat-fight-shorts.jpg',
+    image:'/images/ref/cat-fight-shorts.webp',
     summary:'A clearly marked visual concept demonstrating a custom short route for an individual athlete. The artwork and product are placeholders for later production validation.',
     deliverables:['Color and graphic direction','Name and sponsor zones','Customizer-ready starting point'],
     route:['Select product','Build concept','Approve artwork','Order'],
@@ -47,8 +48,9 @@ const cases=[
 
 export default function SelectedFightwearPage({route='/selected-fightwear'}:{route?:string}){
   const caseSlug=route.split('/')[2]
+  const item=caseSlug?cases.find(entry=>entry.slug===caseSlug):undefined
+  useEffect(()=>{if(item)document.title=`${item.title} — SKAWA FIGHT`},[item])
   if(caseSlug){
-    const item=cases.find(entry=>entry.slug===caseSlug)
     if(!item)return <NotFound/>
     return <PageFrame><main className="selected-case-study">
       <header className="selected-case-study-hero">
@@ -60,15 +62,15 @@ export default function SelectedFightwearPage({route='/selected-fightwear'}:{rou
       </section>
       <section className="selected-case-study-body">
         <div><span>CASE-STUDY FRAMEWORK</span><h2>A TRANSPARENT<br/>PRODUCTION STORY.</h2><p>This demonstration shows the structure of a future verified case study. It does not claim a real customer, delivered production run, or commercial result.</p><div>{item.deliverables.map(deliverable=><b key={deliverable}><Check/>{deliverable}</b>)}</div></div>
-        <ol>{item.route.map((step,index)=><li key={step}><span>0{index+1}</span><h3>{step}</h3><p>{index===0?'Define scope, products and identity.':index===1?'Translate direction into reviewable product decisions.':index===2?'Validate the physical or visual proof before production.':'Complete the approved route with quality gates.'}</p></li>)}</ol>
+        <ol>{item.route.map((step,index)=><li key={step}><span>{String(index+1).padStart(2,'0')}</span><h3>{step}</h3><p>{index===0?'Define scope, products and identity.':index===1?'Translate direction into reviewable product decisions.':index===2?'Validate the physical or visual proof before production.':'Complete the approved route with quality gates.'}</p></li>)}</ol>
       </section>
-      <section className="selected-case-study-cta"><div><span>BUILD FROM THIS DIRECTION</span><h2>MAKE THE NEXT<br/>COLLECTION REAL.</h2></div><Link to={item.link}>{item.linkLabel}<ArrowRight/></Link></section>
+      <section className="selected-case-study-cta"><div><span>BUILD FROM THIS DIRECTION</span><h2>MAKE THE NEXT<br/>COLLECTION REAL.</h2></div><Link to={`${item.link}${item.link.includes('?')?'&':'?'}case_study=${item.slug}`}>{item.linkLabel}<ArrowRight/></Link></section>
     </main></PageFrame>
   }
   return <PageFrame>
     <main className="selected-fightwear">
       <header className="selected-fightwear-hero">
-        <img src="/images/ref/client-team-skawa.jpg" alt="Demo image representing a fightwear team collection"/>
+        <img src="/images/ref/client-team-skawa.webp" alt="Demo image representing a fightwear team collection"/>
         <div className="selected-fightwear-shade"/>
         <div className="selected-fightwear-hero-copy">
           <span><FlaskConical/> DEMONSTRATION PORTFOLIO</span>
@@ -111,9 +113,9 @@ export default function SelectedFightwearPage({route='/selected-fightwear'}:{rou
               {item.deliverables.map(deliverable=><span key={deliverable}><Check/>{deliverable}</span>)}
             </div>
             <div className="selected-route" aria-label="Example project route">
-              {item.route.map((step,stepIndex)=><span key={step}><b>0{stepIndex+1}</b>{step}</span>)}
+              {item.route.map((step,stepIndex)=><span key={step}><b>{String(stepIndex+1).padStart(2,'0')}</b>{step}</span>)}
             </div>
-            <Link to={`/selected-fightwear/${item.slug}`}>OPEN DEMO CASE STUDY <ArrowRight/></Link>
+            <Link to={`/selected-fightwear/${item.slug}?case_study=${item.slug}`}>OPEN DEMO CASE STUDY <ArrowRight/></Link>
           </div>
         </article>)}
       </section>
@@ -127,7 +129,7 @@ export default function SelectedFightwearPage({route='/selected-fightwear'}:{rou
       <section className="selected-cta">
         <div><span>BUILD THE NEXT PIECE</span><h2>YOUR CONCEPT.<br/><em>BUILT TO FIGHT.</em></h2></div>
         <p>Choose the path that fits your project. Individual athletes can begin in the Design Lab; academies and brands can send a structured production brief.</p>
-        <div><Link to="/customize">OPEN DESIGN LAB <ArrowRight/></Link><Link to="/request-mockup">START PROJECT BRIEF</Link></div>
+        <div><Link to="/customize">OPEN DESIGN LAB <ArrowRight/></Link><Link to="/request-mockup?intent=client_work">START PROJECT BRIEF</Link></div>
       </section>
     </main>
   </PageFrame>

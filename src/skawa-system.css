@@ -1,7 +1,7 @@
 /* SKAWA Fight — design tokens (2026 redesign) */
 :root{
-  --sk-red:#e2232a;
-  --sk-red-deep:#b81b21;
+  --sk-red:#e50920;
+  --sk-red-deep:#c10619;
   --sk-ink:#070707;
   --sk-charcoal:#111111;
   --sk-graphite:#1a1a1a;
@@ -22,6 +22,44 @@
   --sk-section-y:clamp(72px,10vw,128px);
   --sk-radius:2px;
   --sk-nav-h:88px;
+
+  /* Light editorial system (homepage, header, footer) */
+  --sk-bg:#f5f5f3;
+  --sk-bg-2:#eeeeec;
+  --sk-surface:#ffffff;
+  --sk-text:#0a0a0b;
+  --sk-text-2:#45474c;
+  --sk-text-3:#6b6d73;
+  --sk-border:rgba(10,10,11,.1);
+  --sk-border-strong:rgba(10,10,11,.2);
+  --sk-glass:rgba(255,255,255,.62);
+  --sk-glass-strong:rgba(255,255,255,.82);
+  --sk-glass-border:rgba(255,255,255,.72);
+  --sk-blur:18px;
+  --sk-shadow-sm:0 1px 2px rgba(10,10,11,.05),0 4px 14px rgba(10,10,11,.05);
+  --sk-shadow-md:0 14px 34px -12px rgba(10,10,11,.18);
+  --sk-shadow-lg:0 34px 70px -28px rgba(10,10,11,.34);
+  --sk-radius-sm:8px;
+  --sk-radius-md:12px;
+  --sk-radius-lg:16px;
+  --sk-radius-xl:20px;
+  --sk-space-1:8px;
+  --sk-space-2:12px;
+  --sk-space-3:16px;
+  --sk-space-4:24px;
+  --sk-space-5:32px;
+  --sk-space-6:48px;
+  --sk-space-7:64px;
+  --sk-space-8:96px;
+  --sk-space-9:128px;
+  --sk-font-wide:'Archivo Black','Arial Black',Impact,sans-serif;
+  --sk-dur-1:180ms;
+  --sk-dur-2:320ms;
+  --sk-dur-3:600ms;
+  --sk-dur-4:900ms;
+  --sk-header-h:88px;
+  --sk-header-h-compact:68px;
+  --sk-container-wide:1520px;
   /* legacy aliases */
   --red:var(--sk-red);
   --ink:var(--sk-ink);
@@ -99,3 +137,13 @@
 @media (prefers-reduced-motion:reduce){
   .sk-btn,.sk-btn svg{transition:none}
 }
+
+.sk-modal{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:24px}
+.sk-modal__backdrop{position:absolute;inset:0;border:0;background:rgba(0,0,0,.62)}
+.sk-modal__card{position:relative;z-index:1;width:min(440px,100%);background:#fff;color:#111;padding:28px 24px 24px;display:grid;gap:12px}
+.sk-modal__card h2{margin:0;font:800 36px/1 var(--sk-display);letter-spacing:-.02em}
+.sk-modal__card p{margin:0;color:#3c3c39;font-size:14px;line-height:1.55}
+.sk-modal__card label{display:grid;gap:6px;font:700 10px/1 var(--sk-body);letter-spacing:.12em}
+.sk-modal__card input{min-height:44px;border:1px solid rgba(0,0,0,.2);padding:0 12px;font:400 14px/1 var(--sk-body);letter-spacing:0}
+.sk-modal__close{position:absolute;top:12px;right:12px;width:36px;height:36px;border:0;background:transparent;color:#111;display:grid;place-items:center;cursor:pointer}
+.sk-modal__close svg{width:18px;height:18px}

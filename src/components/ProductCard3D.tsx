@@ -56,7 +56,6 @@ export default function ProductCard3D({product,index,favorite,onToggleFavorite}:
         <div className="sf-card__chrome">
           <div className="sf-card__chrome-left">
             <span className="sf-card__index">{String(index+1).padStart(2,'0')}</span>
-            <span className="sf-card__badge" title={badge}>{badge}</span>
           </div>
           <button
             type="button"
@@ -77,6 +76,7 @@ export default function ProductCard3D({product,index,favorite,onToggleFavorite}:
 
       <div className="sf-card__meta">
         <div className="sf-card__tags" aria-label="Product labels">
+          <span className="sf-card__badge sf-card__badge--meta">{badge}</span>
           <span className="sf-card__mono">{product.category}</span>
           {product.wholesale&&<span className="sf-card__mono sf-card__mono--mute">Wholesale</span>}
         </div>
@@ -104,12 +104,10 @@ export default function ProductCard3D({product,index,favorite,onToggleFavorite}:
                 CUSTOMIZE
               </Link>
             ):isQuote?(
-              <Link className="sf-card__action" to={`/request-mockup?product=${product.slug}`}>
-                REQUEST
+              <Link className="sf-card__action" to={`/request-mockup?intent=quote&product=${product.slug}`}>
+                REQUEST QUOTE
               </Link>
-            ):(
-              <span className="sf-card__action sf-card__action--ghost" aria-hidden="true">CUSTOMIZE</span>
-            )}
+            ):null}
           </div>
         </div>
       </div>

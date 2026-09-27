@@ -1,12 +1,12 @@
 import {ArrowRight} from 'lucide-react'
-import type {ReactNode} from 'react'
+import {useEffect,type ReactNode} from 'react'
 import Customizer from '../components/Customizer'
-import {HomeFooter} from '../components/HomeRedesign'
+import SiteFooter from '../components/SiteFooter'
 import Nav from '../components/Nav'
 import {Link} from '../routing'
 
 export function PageFrame({children}:{children:ReactNode}){
-  return <><Nav/>{children}<HomeFooter/></>
+  return <><Nav/>{children}<SiteFooter/></>
 }
 
 export function CustomizePage(){
@@ -21,5 +21,6 @@ export function CustomizePage(){
 }
 
 export function NotFound(){
+  useEffect(()=>{document.title='Page Not Found — SKAWA FIGHT'},[])
   return <PageFrame><main className="not-found"><span>404</span><h1>OUTSIDE<br/><em>THE RING.</em></h1><p>That page doesn’t exist.</p><Link className="btn primary" to="/">RETURN HOME <ArrowRight/></Link></main></PageFrame>
 }

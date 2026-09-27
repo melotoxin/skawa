@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useRef,useState} from 'react'
+import {lazy,Suspense,useEffect,useMemo,useRef,useState} from 'react'
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,10 +15,14 @@ import {
 } from 'lucide-react'
 import {addToCart} from '../cart'
 import {products} from '../data'
+import {apparelModelUrl} from '../lib/productModels'
+import {StageErrorBoundary} from '../components/product3d/StageErrorBoundary'
 import {Link} from '../routing'
 import type {Product} from '../types'
 import {NotFound,PageFrame} from './Pages'
 import '../product-detail.css'
+
+const ProductStage=lazy(()=>import('../components/product3d/ProductStage'))
 
 const slug=(value:string)=>value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')
 const productPath=(product:Product)=>`/product/${product.slug||slug(product.name)}`
@@ -93,6 +97,8 @@ function ProductDetailContent({current}:{current:Product}){
   const[added,setAdded]=useState(false)
   const[openPanel,setOpenPanel]=useState(0)
   const[sizeGuideOpen,setSizeGuideOpen]=useState(false)
+  const[show3d,setShow3d]=useState(()=>Boolean(apparelModelUrl(current)))
+  const modelUrl=apparelModelUrl(current)
   const closeGuideRef=useRef<HTMLButtonElement>(null)
   const sizeGuideTriggerRef=useRef<HTMLButtonElement>(null)
   const guideDialogRef=useRef<HTMLElement>(null)
@@ -100,6 +106,7 @@ function ProductDetailContent({current}:{current:Product}){
 
   useEffect(()=>{
     setVariantIndex(0)
+    setShow3d(Boolean(apparelModelUrl(current)))
     setSize(defaultSize)
     setQuantity(1)
     setOpenPanel(0)
@@ -176,22 +183,32 @@ function ProductDetailContent({current}:{current:Product}){
               key={`${item.image}-${index}`}
               type="button"
               className={variantIndex===index?'is-active':''}
-              onClick={()=>setVariantIndex(index)}
+              onClick={()=>{setShow3d(false);setVariantIndex(index)}}
               aria-pressed={variantIndex===index}
               aria-label={`View ${item.label.toLowerCase()} image`}
             ><span>{String(index+1).padStart(2,'0')}</span><img src={item.image} alt=""/><small>{item.label}</small></button>)}
           </div>
 
-          <div className="sf-pdp__stage">
+          <div className={`sf-pdp__stage${show3d&&modelUrl?' sf-pdp__stage--3d':''}`}>
             <span className="sf-pdp__watermark" aria-hidden="true">SKAWA</span>
-            <div className="sf-pdp__stage-meta"><span>0{variantIndex+1} / 0{gallery.length}</span><span><ZoomIn/> PRODUCT DETAIL</span></div>
-            <img
+            <div className="sf-pdp__stage-meta">
+              <span>{show3d&&modelUrl?'3D':`0${variantIndex+1} / 0${gallery.length}`}</span>
+              <span>
+                {modelUrl&&<button type="button" className="sf-pdp__view-toggle" aria-pressed={show3d} onClick={()=>setShow3d(value=>!value)}>{show3d?'PHOTO':'3D VIEW'}</button>}
+                <ZoomIn/> PRODUCT DETAIL
+              </span>
+            </div>
+            {show3d&&modelUrl?<Suspense fallback={null}>
+              <StageErrorBoundary fallback={<img className="sf-pdp__main-image" src={selectedVariant.image} alt={`${current.name} — ${selectedVariant.note}`}/>}>
+                <ProductStage product={{...current,color:selectedVariant.color||current.color,accent:selectedVariant.accent||current.accent}} hover={false} active/>
+              </StageErrorBoundary>
+            </Suspense>:<img
               key={selectedVariant.image}
               className="sf-pdp__main-image"
               src={selectedVariant.image}
               alt={`${current.name} — ${selectedVariant.note}`}
-            />
-            <div className="sf-pdp__image-note"><b>{selectedVariant.label}</b><span>{selectedVariant.note}</span></div>
+            />}
+            <div className="sf-pdp__image-note">{show3d&&modelUrl?<><b>3D VIEW</b><span>Drag to spin. Switch to photo for the catalog shot.</span></>:<><b>{selectedVariant.label}</b><span>{selectedVariant.note}</span></>}</div>
           </div>
         </section>
 
@@ -219,9 +236,9 @@ function ProductDetailContent({current}:{current:Product}){
                 type="button"
                 className={variantIndex===index?'is-active':''}
                 style={{'--swatch-color':variant.color,'--swatch-accent':variant.accent} as React.CSSProperties}
-                onClick={()=>setVariantIndex(index)}
                 aria-label={`Select ${variant.label}`}
                 aria-pressed={variantIndex===index}
+                onClick={()=>{setShow3d(false);setVariantIndex(index)}}
               ><span/></button>)}
             </div>
           </fieldset>}

@@ -1,51 +1,62 @@
 import {ArrowRight,Menu,Search,ShoppingBag,Trash2,UserRound,X} from 'lucide-react'
-import {useEffect,useRef,useState,type FormEvent,type MouseEvent as ReactMouseEvent} from 'react'
+import {useEffect,useRef,useState,type CSSProperties,type FormEvent,type MouseEvent as ReactMouseEvent} from 'react'
 import {getCart,setCart,type CartItem} from '../cart'
 import {Link,go,usePath} from '../routing'
+import InquiryModal from './InquiryModal'
 import '../nav-accessibility.css'
-import '../nav-redesign.css'
+import './site-header.css'
 
 const focusableSelector='a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])'
+/** Desktop navigation is shown from this width; below it the full-screen menu is used. */
+const DESKTOP_QUERY='(min-width: 1100px)'
 
 type Layer='menu'|'search'|'cart'
 
 const navItems=[
   {label:'Shop',to:'/shop',matches:(path:string)=>path==='/shop'||path.startsWith('/product/')},
-  {label:'Customize',to:'/customize',matches:(path:string)=>path==='/customize'},
-  {label:'Academies',to:'/academy',matches:(path:string)=>path==='/academy'},
-  {label:'Private Label',to:'/private-label',matches:(path:string)=>path==='/private-label'||path==='/sample-kit'},
-  {label:'Manufacturing',to:'/process',matches:(path:string)=>path==='/process'||path==='/track'},
-  {label:'Client Work',to:'/selected-fightwear',matches:(path:string)=>path==='/selected-fightwear'||path==='/work'||path.startsWith('/selected-fightwear/')},
-  {label:'More',to:'/about',matches:(path:string)=>path==='/about'||path==='/account'||path==='/request-mockup'},
+  {label:'Custom gear',to:'/customize',matches:(path:string)=>path==='/customize'},
+  {label:'Academy collections',to:'/academy',matches:(path:string)=>path==='/academy'},
+  {label:'Private label',to:'/private-label',matches:(path:string)=>path==='/private-label'||path==='/sample-kit'},
+  {label:'Our process',to:'/process',matches:(path:string)=>path==='/process'||path==='/track'},
+  {label:'About',to:'/about',matches:(path:string)=>path==='/about'},
 ]
 
-const mobileExtra=[
-  {label:'About',to:'/about'},
-  {label:'Contact',to:'/request-mockup'},
+const menuExtras=[
+  {label:'Client work',to:'/selected-fightwear'},
+  {label:'Sample kit',to:'/sample-kit'},
+  {label:'Track an order',to:'/track'},
+  {label:'Contact',to:'/request-mockup?intent=contact'},
 ]
+
+/** Pages whose top section is light; everything else starts with a dark hero. */
+const isLightPage=(path:string)=>path==='/'||path==='/shop'||path.startsWith('/product/')||path==='/customize'
 
 export default function Nav(){
   const path=usePath().split('?')[0]
   const[activeLayer,setActiveLayer]=useState<Layer|null>(null)
   const[scrolled,setScrolled]=useState(false)
   const[items,setItems]=useState<CartItem[]>(()=>getCart())
+  const[mockupOpen,setMockupOpen]=useState(false)
   const menuTrigger=useRef<HTMLButtonElement>(null)
   const searchTrigger=useRef<HTMLButtonElement>(null)
   const cartTrigger=useRef<HTMLButtonElement>(null)
-  const mobileNav=useRef<HTMLElement>(null)
+  const mobileNav=useRef<HTMLDivElement>(null)
   const searchDialog=useRef<HTMLDivElement>(null)
   const cartDialog=useRef<HTMLDivElement>(null)
   const returnFocus=useRef<HTMLElement|null>(null)
 
   useEffect(()=>{
-    const onScroll=()=>setScrolled(scrollY>30)
+    const onScroll=()=>setScrolled(scrollY>24)
     const syncCart=()=>setItems(getCart())
+    const openBrief=()=>setMockupOpen(true)
     onScroll()
-    addEventListener('scroll',onScroll)
+    addEventListener('scroll',onScroll,{passive:true})
     addEventListener('skawa-cart',syncCart)
+    addEventListener('skawa-open-brief',openBrief)
     return()=>{
       removeEventListener('scroll',onScroll)
       removeEventListener('skawa-cart',syncCart)
+      removeEventListener('skawa-open-brief',openBrief)
     }
   },[])
 
@@ -119,7 +130,7 @@ export default function Nav(){
   },[activeLayer])
 
   useEffect(()=>{
-    const wide=matchMedia('(min-width: 901px)')
+    const wide=matchMedia(DESKTOP_QUERY)
     const closeDesktopMenu=()=>{
       if(!wide.matches)return
       setActiveLayer(layer=>layer==='menu'?null:layer)
@@ -147,45 +158,55 @@ export default function Nav(){
     main.focus({preventScroll:true})
     main.scrollIntoView({block:'start'})
   }
-  const lightPage=path==='/shop'||path.startsWith('/product/')||path==='/customize'
+  const tone=scrolled||open||isLightPage(path)?'light':'dark'
 
   return <>
     <a className="skip-link" href="#main-content" onClick={skipToContent}>SKIP TO MAIN CONTENT</a>
-    <header className={`nav ${scrolled?'scrolled':''} ${lightPage&&!scrolled?'light-nav':''} ${open?'menu-open':''}`}>
-      <Link className="logo logo--image" to="/" aria-label="SKAWA Fight home" aria-current={path==='/'?'page':undefined}>
-        <img className="logo__mark logo__mark--light" src="/images/brand/skawa-logo-light.png" alt="" width={160} height={41} decoding="async"/>
-        <img className="logo__mark logo__mark--dark" src="/images/brand/skawa-logo-dark.png" alt="" width={160} height={41} decoding="async"/>
-      </Link>
-      <nav ref={mobileNav} id="primary-navigation" className={open?'open':''} aria-label="Main navigation" tabIndex={open?-1:undefined}>
-        <div className="mobile-nav-heading" aria-hidden="true"><span>MENU</span><b>FIND YOUR CORNER.</b></div>
-        {navItems.map(item=><Link
-          key={item.to}
-          to={item.to}
-          onClick={closeForNavigation}
-          className={item.matches(path)?'active':''}
-          aria-current={item.matches(path)?'page':undefined}
-        >{item.label}</Link>)}
-        {mobileExtra.map(item=>(
-          <Link
-            key={item.to}
-            to={item.to}
-            onClick={closeForNavigation}
-            className={`nav-mobile-extra${path===item.to||(item.to==='/request-mockup'&&path==='/request-mockup')?' active':''}`}
-            aria-current={path===item.to?'page':undefined}
-          >{item.label}</Link>
-        ))}
-        <div className="mobile-nav-actions" role="group" aria-label="Account and shopping bag">
-          <Link to="/account" onClick={closeForNavigation} aria-current={path==='/account'?'page':undefined}><UserRound/><span>ACCOUNT</span></Link>
-          <button type="button" onClick={()=>openLayer('cart',menuTrigger.current)} aria-haspopup="dialog"><ShoppingBag/><span>SHOPPING BAG{count?` · ${count}`:''}</span></button>
-          <Link className="nav-cta nav-cta--block" to="/request-mockup" onClick={closeForNavigation}>GET A FREE MOCKUP</Link>
+    <header className={`site-header site-header--${tone}${scrolled?' is-scrolled':''}${open?' is-menu-open':''}`}>
+      <div className="site-header__bar">
+        <Link className="site-header__logo" to="/" aria-label="SKAWA Fight home" aria-current={path==='/'?'page':undefined} onClick={closeForNavigation}>
+          <img className="site-header__logo-img site-header__logo-img--dark" src="/images/brand/skawa-logo-dark.png" alt="" width={160} height={41} decoding="async"/>
+          <img className="site-header__logo-img site-header__logo-img--light" src="/images/brand/skawa-logo-light.png" alt="" width={160} height={41} decoding="async"/>
+        </Link>
+
+        <nav className="site-header__nav" aria-label="Main navigation">
+          <ul>
+            {navItems.map(item=><li key={item.to}>
+              <Link to={item.to} className={item.matches(path)?'is-active':''} aria-current={item.matches(path)?'page':undefined}>{item.label}</Link>
+            </li>)}
+          </ul>
+        </nav>
+
+        <div className="site-header__actions">
+          <button ref={searchTrigger} type="button" className="site-header__icon" onClick={()=>openLayer('search',searchTrigger.current)} aria-label="Search" aria-haspopup="dialog" aria-expanded={searchOpen} aria-controls={searchOpen?'site-search-dialog':undefined}><Search aria-hidden="true"/></button>
+          <Link className="site-header__icon site-header__icon--account" to="/account" aria-label="Project hub" aria-current={path==='/account'?'page':undefined}><UserRound aria-hidden="true"/></Link>
+          <button ref={cartTrigger} type="button" className="site-header__icon site-header__icon--cart" onClick={()=>openLayer('cart',cartTrigger.current)} aria-label={`Shopping bag with ${count} ${count===1?'item':'items'}`} aria-haspopup="dialog" aria-expanded={cartOpen} aria-controls={cartOpen?'shopping-bag-dialog':undefined}><ShoppingBag aria-hidden="true"/>{count>0&&<i aria-hidden="true">{count}</i>}</button>
+          <Link className="site-header__cta" to="/request-mockup?intent=get_started">Get started<ArrowRight aria-hidden="true"/></Link>
+          <button ref={menuTrigger} type="button" className="site-header__icon site-header__menu" onClick={()=>open?closeLayer():openLayer('menu',menuTrigger.current)} aria-expanded={open} aria-controls="site-menu" aria-label={open?'Close menu':'Open menu'}>{open?<X aria-hidden="true"/>:<Menu aria-hidden="true"/>}</button>
         </div>
-      </nav>
-      <div className="nav-actions">
-        <button ref={searchTrigger} type="button" className="search-toggle" onClick={()=>openLayer('search',searchTrigger.current)} aria-label="Search" aria-haspopup="dialog" aria-expanded={searchOpen} aria-controls={searchOpen?'site-search-dialog':undefined}><Search/></button>
-        <Link className="account-toggle" to="/account" aria-label="Open project hub" aria-current={path==='/account'?'page':undefined}><UserRound/></Link>
-        <button ref={cartTrigger} type="button" className="cart-toggle" onClick={()=>openLayer('cart',cartTrigger.current)} aria-label={`Shopping bag with ${count} ${count===1?'item':'items'}`} aria-haspopup="dialog" aria-expanded={cartOpen} aria-controls={cartOpen?'shopping-bag-dialog':undefined}><ShoppingBag/>{count>0&&<i aria-hidden="true">{count}</i>}</button>
-        <Link className="nav-cta" to="/request-mockup">GET A FREE MOCKUP</Link>
-        <button ref={menuTrigger} type="button" className="menu" onClick={()=>open?closeLayer():openLayer('menu',menuTrigger.current)} aria-expanded={open} aria-controls="primary-navigation" aria-label={open?'Close menu':'Open menu'}>{open?<X/>:<Menu/>}</button>
+      </div>
+
+      <div ref={mobileNav} id="site-menu" className={`site-menu${open?' is-open':''}`} role="dialog" aria-modal="true" aria-label="Site menu" hidden={!open} tabIndex={-1}>
+        <nav aria-label="Menu">
+          <ol className="site-menu__primary">
+            {navItems.map((item,index)=><li key={item.to} style={{'--i':index} as CSSProperties}>
+              <Link to={item.to} onClick={closeForNavigation} className={item.matches(path)?'is-active':''} aria-current={item.matches(path)?'page':undefined}>
+                <span>{String(index+1).padStart(2,'0')}</span>{item.label}<ArrowRight aria-hidden="true"/>
+              </Link>
+            </li>)}
+          </ol>
+          <ul className="site-menu__secondary">
+            {menuExtras.map(item=><li key={item.to}><Link to={item.to} onClick={closeForNavigation}>{item.label}</Link></li>)}
+          </ul>
+        </nav>
+        <div className="site-menu__footer">
+          <div className="site-menu__utility">
+            <Link to="/account" onClick={closeForNavigation}><UserRound aria-hidden="true"/>Project hub</Link>
+            <button type="button" onClick={()=>openLayer('cart',menuTrigger.current)} aria-haspopup="dialog"><ShoppingBag aria-hidden="true"/>Bag{count?` · ${count}`:''}</button>
+          </div>
+          <Link className="site-menu__cta" to="/request-mockup?intent=get_started" onClick={closeForNavigation}>Get started<ArrowRight aria-hidden="true"/></Link>
+          <p>Custom gear for a stronger tomorrow.</p>
+        </div>
       </div>
     </header>
 
@@ -205,5 +226,6 @@ export default function Nav(){
       </div>
       <button type="button" className="drawer-backdrop nav-cart-backdrop" aria-label="Close shopping bag" onClick={()=>closeLayer()} tabIndex={-1}/>
     </>}
+    <InquiryModal open={mockupOpen} onClose={()=>setMockupOpen(false)}/>
   </>
 }

@@ -1,0 +1,27 @@
+# CodeRabbit review settings (https://docs.coderabbit.ai/guides/configure-coderabbit)
+language: en-US
+reviews:
+  profile: chill
+  high_level_summary: true
+  poem: false
+  review_status: true
+  auto_review:
+    enabled: true
+    drafts: false
+  # Review code, not binary assets or generated baselines.
+  path_filters:
+    - "!public/**"
+    - "!**/*.glb"
+    - "!**/*.webp"
+    - "!**/*.png"
+    - "!**/*.jpg"
+    - "!package-lock.json"
+    - "!qa/customizer-baseline/**"
+  path_instructions:
+    - path: "src/**/*.{ts,tsx}"
+      instructions: >-
+        Vite + React 19 + TypeScript with three.js / React Three Fiber. House style is compact
+        (single quotes, no semicolons). Focus on correctness, accessibility, memory/performance
+        (canvas and WebGL resources) and regressions in the Design Lab (2D compositing and 3D preview).
+    - path: "scripts/**"
+      instructions: Dev-only tooling that never runs in the browser build.

@@ -18,6 +18,14 @@ npm run preview
 
 The production files are written to `dist/`. Configure the host to return `index.html` for unknown paths because routing is handled in the browser.
 
+## Homepage
+
+The homepage lives in `src/components/home/` as one component per section (hero, customer paths, process, craftsmanship, product showcase, Design Lab preview, academy, private label, offers, proof, discipline wall, final CTA), composed in `src/StorefrontHome.tsx`. The site header (`src/components/Nav.tsx`) and footer (`src/components/SiteFooter.tsx`) are shared by every page.
+
+- **Copy, links and facts:** edit `src/components/home/content.ts`. Numbers, testimonials, client logos and social profiles render only when real entries are added there (`siteFacts`, `testimonials`, `clientLogos`, `socialProfiles`).
+- **Design tokens:** `src/skawa-system.css` (`--sk-*` colors, spacing, radius, shadows, glass, motion).
+- **Images:** optimized WebP derivatives are generated into `public/images/home/` with `node scripts/build-home-assets.mjs`. The hero athlete cutout is produced by `scripts/cut-hero-athlete.py` (requires `rembg`).
+
 ## Production handoff
 
 - Product imagery, concepts, pricing, lead submissions, order data, account data, and portfolio entries are explicitly presented as demo/local content where they are not connected to verified services.

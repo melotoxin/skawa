@@ -117,6 +117,18 @@ export default function CommerceCatalogPage(){
     })
   },[category,customOnly,route,search,sort,sport,wholesaleOnly])
 
+  const scopedProducts=useMemo(()=>{
+    const query=search.trim().toLowerCase()
+    return products.filter(product=>{
+      if(query&&!`${product.name} ${product.category} ${product.tag} ${product.description} ${product.sports.join(' ')}`.toLowerCase().includes(query))return false
+      if(sport&&!product.sports.includes(sport))return false
+      if(route==='retail'&&product.price.toLowerCase().includes('quote'))return false
+      if(route==='quote'&&!product.price.toLowerCase().includes('quote'))return false
+      if(customOnly&&!product.custom)return false
+      if(wholesaleOnly&&!product.wholesale)return false
+      return true
+    })
+  },[customOnly,route,search,sport,wholesaleOnly])
   const activeCount=[category,sport,route!=='all',customOnly,wholesaleOnly].filter(Boolean).length
 
   const toggleFavorite=(id:number)=>setFavorites(current=>{
@@ -133,9 +145,9 @@ export default function CommerceCatalogPage(){
     <div className="sf-shop__filter-block">
       <p>Category</p>
       <button type="button" className={!category?'is-on':''} onClick={()=>setCategory('')}>All products</button>
-      {categoryOrder.map(item=><button type="button" key={item} className={category===item?'is-on':''} onClick={()=>setCategory(item)}>
+      {categoryOrder.filter(item=>item===category||scopedProducts.some(product=>product.category===item)).map(item=><button type="button" key={item} className={category===item?'is-on':''} onClick={()=>setCategory(item)}>
         <span>{item}</span>
-        <b>{products.filter(product=>product.category===item).length}</b>
+        <b>{scopedProducts.filter(product=>product.category===item).length}</b>
       </button>)}
     </div>
     <div className="sf-shop__filter-block">
@@ -169,7 +181,7 @@ export default function CommerceCatalogPage(){
           <p>Browse the full fightwear catalog. Customize eligible pieces, or request academy and private-label pricing.</p>
         </div>
         <div className="sf-shop__hero-visual" aria-hidden="true">
-          <img src="/images/ref/hero-fighter-front.jpg" alt="" loading="eager" decoding="async"/>
+          <img src="/images/ref/hero-fighter-front.webp" alt="" loading="eager" decoding="async"/>
         </div>
       </header>
 
