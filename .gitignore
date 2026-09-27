@@ -7,3 +7,17 @@ Thumbs.db
 
 .vercel
 .env*
+
+# Raw 2x renders from scripts/customizer-render (regenerated on demand)
+scripts/customizer-render/out/
+
+# Local-only sources and scratch (kept on disk, not versioned)
+public/models/bjj-gi.glb
+public/models/fight-short.glb
+public/models/rash-guard.glb
+public/images/_incoming/
+public/images/products/_raw/
+ChatGPT Image*
+work/
+tmp-*
+.claude/

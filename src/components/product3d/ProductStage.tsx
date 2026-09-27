@@ -2,7 +2,8 @@ import {Suspense,useEffect,useState} from 'react'
 import {Canvas} from '@react-three/fiber'
 import {ContactShadows,OrbitControls} from '@react-three/drei'
 import type {Product} from '../../types'
-import {resolveGearKind,resolveModelPath} from '../../lib/productModels'
+import {apparelModelUrl,resolveGearKind} from '../../lib/productModels'
+import {GlbApparel} from './GlbApparel'
 import {ProceduralGear} from './ProceduralGear'
 
 type StageProps={
@@ -13,10 +14,10 @@ type StageProps={
 
 function StudioLights(){
   return <>
-    <ambientLight intensity={0.4}/>
-    <directionalLight position={[2.4,3.2,1.6]} intensity={1.2}/>
-    <directionalLight position={[-2.2,1.4,-1.8]} intensity={0.55} color="#e2232a"/>
-    <pointLight position={[0,1.6,2]} intensity={0.65}/>
+    <ambientLight intensity={0.85}/>
+    <directionalLight position={[2.4,3.2,1.6]} intensity={1.8}/>
+    <directionalLight position={[-2.2,1.4,-1.8]} intensity={0.7} color="#ffd0d2"/>
+    <pointLight position={[0,1.6,2]} intensity={1.1}/>
   </>
 }
 
@@ -28,10 +29,9 @@ function StageLoader(){
 export default function ProductStage({product,hover,active}:StageProps){
   const [reducedMotion,setReducedMotion]=useState(false)
   const kind=resolveGearKind(product)
+  const modelUrl=apparelModelUrl(product)
   const color=product.color||'#111111'
   const accent=product.accent||'#e2232a'
-  // Reserved for future GLB swap — resolve path kept in sync with catalog data
-  void resolveModelPath(product)
 
   useEffect(()=>{
     const media=window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -51,20 +51,22 @@ export default function ProductStage({product,hover,active}:StageProps){
         className="sf-card__canvas"
         dpr={[1,1.25]}
         frameloop={reducedMotion?'demand':'always'}
-        camera={{position:[0,0.2,2.4],fov:40,near:0.1,far:40}}
+        camera={{position:[0,0.02,4.6],fov:28,near:0.1,far:40}}
         gl={{antialias:true,alpha:false,powerPreference:'default'}}
         onCreated={({gl})=>{
-          gl.setClearColor('#050505',1)
+          gl.setClearColor('#e4e4e1',1)
         }}
       >
         <StudioLights/>
-        <ProceduralGear kind={kind} color={color} accent={accent} hover={hover} reducedMotion={reducedMotion}/>
+        {modelUrl
+          ?<GlbApparel url={modelUrl} color={color} accent={accent} hover={hover} reducedMotion={reducedMotion} fit={1.05} yaw={0.42}/>
+          :<ProceduralGear kind={kind} color={color} accent={accent} hover={hover} reducedMotion={reducedMotion}/>}
         <ContactShadows position={[0,-0.75,0]} opacity={0.5} scale={3} blur={2.2} far={2.2} color="#000"/>
         <OrbitControls
           enablePan={false}
-          enableZoom={hover}
-          minDistance={1.6}
-          maxDistance={3.2}
+          enableZoom
+          minDistance={2.8}
+          maxDistance={6.5}
           maxPolarAngle={Math.PI*0.62}
           minPolarAngle={Math.PI*0.3}
           rotateSpeed={0.65}

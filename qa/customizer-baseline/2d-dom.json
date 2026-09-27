@@ -1,0 +1,156 @@
+{
+ "capturedAt": "2026-09-26T02:47:05.665Z",
+ "viewport": "1440x900",
+ "mode": "2D",
+ "defaultDesign": {
+  "wash": "rgb(21, 21, 21) multiply 42%",
+  "text": "YOUR NAME on front at 50%/27%",
+  "logo": "none"
+ },
+ "products": [
+  {
+   "id": 1,
+   "name": "BJJ GI",
+   "front": "/images/products/bjj-gi-1.png",
+   "back": "/images/products/bjj-gi-1.png"
+  },
+  {
+   "id": 2,
+   "name": "Fight Short",
+   "front": "/images/products/fight-short-1.png",
+   "back": "/images/products/fight-short-1.png"
+  },
+  {
+   "id": 3,
+   "name": "Full Sleeves",
+   "front": "/images/products/full-sleeves-1.png",
+   "back": "/images/products/full-sleeves-1.png"
+  },
+  {
+   "id": 10,
+   "name": "Short Sleeves",
+   "front": "/images/products/short-sleeves-1.png",
+   "back": "/images/products/short-sleeves-1.png"
+  },
+  {
+   "id": 11,
+   "name": "Elite Fight Shorts",
+   "front": "/images/products/shorts-gold-cut.png",
+   "back": "/images/products/shorts-white-cut.png"
+  },
+  {
+   "id": 12,
+   "name": "Shadow Series",
+   "front": "/images/products/shorts-red-cut.png",
+   "back": "/images/products/shorts-camo-cut.png"
+  },
+  {
+   "id": 13,
+   "name": "Reign Fight Shorts",
+   "front": "/images/products/shorts-white-cut.png",
+   "back": "/images/products/shorts-gold-cut.png"
+  },
+  {
+   "id": 14,
+   "name": "Stealth Pro",
+   "front": "/images/products/shorts-camo-cut.png",
+   "back": "/images/products/shorts-red-cut.png"
+  },
+  {
+   "id": 15,
+   "name": "Academy Gold Shorts",
+   "front": "/images/products/shorts-gold-cut.png",
+   "back": "/images/academy-team.webp"
+  },
+  {
+   "id": 16,
+   "name": "Crimson Training Shorts",
+   "front": "/images/products/shorts-red-cut.png",
+   "back": "/images/products/shorts-white-cut.png"
+  },
+  {
+   "id": 17,
+   "name": "Kids BJJ Gi",
+   "front": "/images/products/kids-bjj-gi.png",
+   "back": "/images/products/kids-bjj-gi.png"
+  },
+  {
+   "id": 18,
+   "name": "Grappling Shorts",
+   "front": "/images/products/grappling-shorts.png",
+   "back": "/images/products/grappling-shorts.png"
+  },
+  {
+   "id": 19,
+   "name": "Jiu Jitsu Belts",
+   "front": "/images/products/jiu-jitsu-belts.png",
+   "back": "/images/products/jiu-jitsu-belts.png"
+  },
+  {
+   "id": 21,
+   "name": "Spats / Compression Pants",
+   "front": "/images/products/spats-compression-pants.png",
+   "back": "/images/products/spats-compression-pants.png"
+  },
+  {
+   "id": 22,
+   "name": "Sports Bags",
+   "front": "/images/products/sports-bags.png",
+   "back": "/images/products/sports-bags.png"
+  },
+  {
+   "id": 23,
+   "name": "Boxing Gloves",
+   "front": "/images/products/boxing-gloves.png",
+   "back": "/images/products/boxing-gloves.png"
+  },
+  {
+   "id": 24,
+   "name": "MMA Gloves",
+   "front": "/images/products/mma-gloves.png",
+   "back": "/images/products/mma-gloves.png"
+  },
+  {
+   "id": 25,
+   "name": "Shin Pads",
+   "front": "/images/products/shin-pads.png",
+   "back": "/images/products/shin-pads.png"
+  },
+  {
+   "id": 26,
+   "name": "Focus Mitts / Focus Pads",
+   "front": "/images/products/focus-mitts.png",
+   "back": "/images/products/focus-mitts.png"
+  },
+  {
+   "id": 27,
+   "name": "Hand Wraps",
+   "front": "/images/products/hand-wraps.png",
+   "back": "/images/products/hand-wraps.png"
+  },
+  {
+   "id": 28,
+   "name": "Boxing Trunks",
+   "front": "/images/products/boxing-trunks.png",
+   "back": "/images/products/boxing-trunks.png"
+  },
+  {
+   "id": 29,
+   "name": "Karate Uniform",
+   "front": "/images/products/karate-uniform.png",
+   "back": "/images/products/karate-uniform.png"
+  },
+  {
+   "id": 30,
+   "name": "Judo Uniform",
+   "front": "/images/products/judo-uniform.png",
+   "back": "/images/products/judo-uniform.png"
+  },
+  {
+   "id": 31,
+   "name": "Gear Bags",
+   "front": "/images/products/gear-bags.png",
+   "back": "/images/products/gear-bags.png"
+  }
+ ]
+}

@@ -1,7 +1,10 @@
 # SKAWA FIGHT — 3D model pipeline
 
-Catalog cards look for GLB files under this folder. If a file is missing, the shop
-renders a procedural Three.js mesh (dark metallic fightwear) automatically.
+Rash guards and fight shorts load `rash-guard.glb` and `fight-short.glb`. Those two
+files are generated from the same silhouettes as the customizer (`scripts/export-apparel-glb.mjs`)
+in SKAWA black fabric with a red accent. Product pages and the customizer recolor
+materials named `front`, `back`, `fabric`, and `accent`. Other gear stays on the
+procedural mesh until its GLB is added here.
 
 ## Expected files
 

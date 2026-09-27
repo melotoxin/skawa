@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>2D template renderer</title>
+<style>
+  body{margin:0;padding:12px;background:#777;font:12px/1.4 ui-monospace,monospace;color:#111}
+  #log{white-space:pre-wrap;margin-bottom:8px}
+  #out{display:flex;flex-wrap:wrap;gap:8px}
+  figure{margin:0;display:grid;gap:4px}
+  figure img{width:220px;height:275px;object-fit:contain;background:repeating-conic-gradient(#bbb 0 25%,#eee 0 50%) 0 0/16px 16px}
+</style>
+</head>
+<body>
+<!-- Dev-only tool: open /scripts/customizer-render/render.html?template=fight-short (add &save=1 to write files). -->
+<div id="log">loading…</div>
+<div id="out"></div>
+<script type="module" src="./render.js"></script>
+</body>
+</html>

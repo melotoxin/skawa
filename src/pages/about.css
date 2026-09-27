@@ -516,6 +516,21 @@
   font:700 12px 'Barlow Condensed',sans-serif;
   color:var(--red);
 }
+.about-values__title{
+  display:flex;
+  align-items:baseline;
+  gap:12px;
+  margin:16px 0 12px;
+}
+.about-values__title b{
+  margin:0;
+  font:800 13px/1 var(--sk-body);
+  letter-spacing:.14em;
+  color:var(--red);
+}
+.about-values__title h3{margin:0}
+.about-discipline-panels article{min-height:560px}
+.about-discipline-copy{display:flex;flex-direction:column;justify-content:flex-end;gap:12px}
 .about-values__grid h3{
   font:800 30px/.9 'Barlow Condensed',sans-serif;
   margin:0 0 12px;

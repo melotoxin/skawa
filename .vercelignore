@@ -1,0 +1,30 @@
+# Local-only files that the Vercel build never needs
+.env*
+dist
+*.tsbuildinfo
+tmp-*
+outputs
+work
+ChatGPT Image*
+
+# Dev tooling, QA and docs (not part of the site)
+scripts
+qa
+docs
+
+# Source originals: the site serves the optimized WebP versions
+public/images/_incoming
+public/images/products/_raw
+public/images/products/*.png
+public/images/products/*.jpg
+public/images/ref/*.jpg
+public/images/ref/*.png
+public/images/products/*.jpeg
+public/images/campaign/*.jpg
+public/images/*.png
+public/images/*.jpg
+
+# Dev-only 3D sources (used by scripts/customizer-render to rebuild 2D layers; the site uses public/models/products)
+public/models/bjj-gi.glb
+public/models/fight-short.glb
+public/models/rash-guard.glb
